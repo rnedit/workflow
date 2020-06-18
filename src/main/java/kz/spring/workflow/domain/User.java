@@ -1,14 +1,15 @@
 package kz.spring.workflow.domain;
-import lombok.Builder;
+
+
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,34 +20,35 @@ public class User {
     @Id
     private String id;
 
-    @NotBlank
+    @NotNull
     @Size(max = 20)
     private String username;
 
-    @NotBlank
     @Size(max = 255)
     private String name;
 
-    @NotBlank
+    @NotNull
     @Size(max = 255)
     private String firstName;
 
-    @NotBlank
+    @NotNull
     @Size(max = 255)
     private String lastName;
 
-    @NotBlank
+    @NotNull
     @Size(max = 50)
     @Email
     private String email;
 
-    @NotBlank
+    @NotNull
     @Size(max = 120)
     private String password;
 
-    @NotBlank
     @Size(max = 255)
     private String refreshJwt;
+
+    @NotNull
+    private Date creationDate;
 
     @NotNull
     private Integer refreshJwtMaxAge;
@@ -55,7 +57,7 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     public User(String username, String name, String email, String password, String firstName,
-                String lastName, Integer refreshJwtMaxAge) {
+                String lastName, Integer refreshJwtMaxAge, Date creationDate) {
         this.username = username;
         this.name = name;
         this.firstName = firstName;
@@ -63,6 +65,13 @@ public class User {
         this.email = email;
         this.password = password;
         this.refreshJwtMaxAge = refreshJwtMaxAge;
+        this.creationDate = creationDate;
+    }
+
+    private User () {}
+
+    public User createBlankUser() {
+       return new User();
     }
 
 }

@@ -26,11 +26,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -66,9 +68,13 @@ public class AuthController {
 
     @PostMapping("/api/auth/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
-                                   HttpServletResponse response) {
+                                   HttpServletResponse response,BindingResult bindingResult) {
         Map<String,String> error = new HashMap<>();
-
+        if (bindingResult.hasErrors()) {
+            error.put("ERROR","signin null");
+            error.put("code","1");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -110,6 +116,12 @@ public class AuthController {
         response.addCookie(cookie);
 
         Date updatedDate = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+        String ff;
+        if (user.getCreationDate()!=null)
+            ff = formatter.format(user.getCreationDate());
+        else
+            ff = "null";
         return ResponseEntity.ok(new JwtResponse(
                 user.getId(),
                 user.getUsername(),
@@ -120,7 +132,8 @@ public class AuthController {
                 jwtUserRefresh,
                 user.getRefreshJwtMaxAge(),
                 updatedDate,
-                roles
+                roles,
+                ff
         ));
 
        // return "redirect:/";
@@ -129,8 +142,14 @@ public class AuthController {
     @PostMapping("/api/auth/refreshjwt")
     public ResponseEntity<?> refreshJWT(@Valid @RequestBody RefreshJwt refreshJwt,
                                         HttpServletRequest request,
-                                        HttpServletResponse response) {
+                                        HttpServletResponse response,
+                                        BindingResult bindingResult) {
         Map<String,String> error = new HashMap<>();
+        if (bindingResult.hasErrors()) {
+            error.put("ERROR","jwt null");
+            error.put("code","1");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
         String newJwt = null;
 
         if (refreshJwt.getRefreshJwt() != null) {
@@ -163,6 +182,12 @@ public class AuthController {
                 response.addCookie(cookie);
 
                 Date updatedDate = new Date();
+                SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+                String ff;
+                if (user.getCreationDate()!=null)
+                    ff = formatter.format(user.getCreationDate());
+                else
+                    ff = "null";
                 return ResponseEntity.ok(new JwtResponse(
                         user.getId(),
                         user.getUsername(),
@@ -173,7 +198,8 @@ public class AuthController {
                         jwtUserRefresh,
                         user.getRefreshJwtMaxAge(),
                         updatedDate,
-                        roles
+                        roles,
+                        ff
                 ));
             }
         }
@@ -185,8 +211,15 @@ public class AuthController {
     }
 
     @PostMapping("/api/auth/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest, BindingResult bindingResult) {
         Map<String,String> error = new HashMap<>();
+
+        if (bindingResult.hasErrors()) {
+            error.put("ERROR","signup null");
+            error.put("code","2");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             error.put("ERROR","User Name Exist");
             error.put("code","0");
@@ -210,8 +243,10 @@ public class AuthController {
                     encoder.encode(signUpRequest.getPassword()),
                     signUpRequest.getFirstName(),
                     signUpRequest.getLastName(),
+
                     //jwtUtils.createRefreshToken(),
-                    refreshJwtmaxAge
+                    refreshJwtmaxAge,
+                    new Date()
             );
 
 
@@ -225,25 +260,25 @@ public class AuthController {
             if (!strRoles.isEmpty()) {
                 strRoles.forEach(role ->{
                     switch (role) {
-                        case "ADMIN":
+                        case "ADMIN","ROLE_ADMIN":
                             Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                             roles.add(adminRole);
 
                             break;
-                        case "MODERATOR":
+                        case "MODERATOR","ROLE_MODERATOR":
                             Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
                                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                             roles.add(modRole);
 
                             break;
-                        case "USER":
+                        case "USER","ROLE_USER":
                             Role usrRole = roleRepository.findByName(ERole.ROLE_USER)
                                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                             roles.add(usrRole);
 
                             break;
-                        case "ANONYMOUS":
+                        case "ANONYMOUS","ROLE_ANONYMOUS":
                             Role anaRole = roleRepository.findByName(ERole.ROLE_ANONYMOUS)
                                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                             roles.add(anaRole);

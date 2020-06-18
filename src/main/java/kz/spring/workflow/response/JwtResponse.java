@@ -20,6 +20,8 @@ public class JwtResponse {
     Date updatedJwt;
     List<ERole> roles;
 
+    String creationDate;
+
     public JwtResponse(  String id,
                         String username,
                         String firstName,
@@ -29,7 +31,8 @@ public class JwtResponse {
                         String refreshJwt,
                         Integer refreshJwtMaxAge,
                         Date updatedJwt,
-                        List<ERole> roles
+                        List<ERole> roles,
+                        String creationDate
     ) {
         this.id = id;
         this.username = username;
@@ -41,6 +44,7 @@ public class JwtResponse {
         this.refreshJwtMaxAge = refreshJwtMaxAge;
         this.updatedJwt = updatedJwt;
         this.roles = roles;
+        this.creationDate = creationDate;
     }
 
 }
