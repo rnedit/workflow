@@ -13,10 +13,14 @@ public class ProfileRequest {
     @NotNull
     String name;
 
-    String parentId;
+    String parentId; //орг. единица
 
+    @NotNull
     String userId;
 
+    String oldUserId;
+
+    @NotNull
     private Set<String> access= new HashSet<>();
 
 }

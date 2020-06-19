@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.HashSet;
@@ -49,6 +50,8 @@ public class User {
 
     @NotNull
     private Date creationDate;
+
+    private String parentId; //профайл
 
     @NotNull
     private Integer refreshJwtMaxAge;

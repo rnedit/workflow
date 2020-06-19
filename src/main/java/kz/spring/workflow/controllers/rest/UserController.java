@@ -1,5 +1,7 @@
 package kz.spring.workflow.controllers.rest;
 
+import kz.spring.workflow.controllers.rest.utils.ApiUtils;
+import kz.spring.workflow.domain.Role;
 import kz.spring.workflow.domain.User;
 import kz.spring.workflow.repository.UserRepository;
 import kz.spring.workflow.request.SignupRequest;
@@ -23,6 +25,15 @@ public class UserController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ApiUtils apiUtils;
+
+    @PostMapping("/parentidnotnull")
+    public ResponseEntity<?> getUsersByParentIdIsNull() {
+        List<User> users = userRepository.getUsersByParentIdIsNull();
+        return ResponseEntity.ok(users);
+    }
 
     @PostMapping()
     public ResponseEntity<?> users(@Valid @RequestBody UsersRequest usersRequest,
@@ -50,6 +61,7 @@ public class UserController {
     ResponseEntity<?> editUser(@PathVariable String id, @Valid @RequestBody SignupRequest signUpRequest,
                                BindingResult bindingResult) {
         Map<String,String> error = new HashMap<>();
+        System.out.println(signUpRequest);
         if (bindingResult.hasErrors()) {
             error.put("ERROR","editUser null");
             error.put("code","2");
@@ -77,6 +89,7 @@ public class UserController {
         user.setEmail(signUpRequest.getEmail());
         user.setUsername(signUpRequest.getUsername());
 
+        user.setRoles(apiUtils.calcRoles(signUpRequest.getRoles()));
         userRepository.save(user);
         return ResponseEntity.ok(user);
     }

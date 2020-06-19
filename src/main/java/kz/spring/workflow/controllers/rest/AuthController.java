@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import kz.spring.workflow.controllers.rest.utils.*;
 
 
 @RestController
@@ -58,6 +59,9 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    ApiUtils apiUtils;
 
     @Value("${cookie.maxAge}")
     private int cookieMaxAgeS;
@@ -215,6 +219,10 @@ public class AuthController {
         Map<String,String> error = new HashMap<>();
 
         if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors().forEach(e->{
+                System.out.println(e.getObjectName() +" "+ e.getCode());
+                System.out.println(String.valueOf(signUpRequest));
+            });
             error.put("ERROR","signup null");
             error.put("code","2");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -250,53 +258,10 @@ public class AuthController {
             );
 
 
-        Set<String> strRoles = signUpRequest.getRoles();
-        Set<Role> roles = new HashSet<>();
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            if (!strRoles.isEmpty()) {
-                strRoles.forEach(role ->{
-                    switch (role) {
-                        case "ADMIN","ROLE_ADMIN":
-                            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(adminRole);
-
-                            break;
-                        case "MODERATOR","ROLE_MODERATOR":
-                            Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(modRole);
-
-                            break;
-                        case "USER","ROLE_USER":
-                            Role usrRole = roleRepository.findByName(ERole.ROLE_USER)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(usrRole);
-
-                            break;
-                        case "ANONYMOUS","ROLE_ANONYMOUS":
-                            Role anaRole = roleRepository.findByName(ERole.ROLE_ANONYMOUS)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(anaRole);
-
-                            break;
-                    }
-                });
-            } else {
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                roles.add(userRole);
-            }
-
-
-        }
-
-        user.setRoles(roles);
+        user.setRoles(apiUtils.calcRoles(signUpRequest.getRoles()));
         userRepository.save(user);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
+
+
 }

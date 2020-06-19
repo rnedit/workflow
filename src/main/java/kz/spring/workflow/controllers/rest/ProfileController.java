@@ -80,6 +80,8 @@ public class ProfileController {
         Set<AccessProfile> access = calcAccess(strAccess);
         profile.setAccess(access);
         profileRepository.save(profile);
+        user.setParentId(profile.getId());
+        userRepository.save(user);
         return ResponseEntity.ok(profile);
     }
 
@@ -99,6 +101,8 @@ public class ProfileController {
 
         User user = userRepository.getByUsername(profileRequest.getUserId());
 
+        User oldUser = userRepository.getById(profileRequest.getOldUserId());
+
         User userProf = user.createBlankUser();
         userProf.setId(user.getId());
         userProf.setUsername(user.getUsername());
@@ -112,19 +116,37 @@ public class ProfileController {
         Set<String> strAccess = profileRequest.getAccess();
         Set<AccessProfile> access = calcAccess(strAccess);
         profile.setAccess(access);
-        profileRepository.save(profile);
+
+            profileRepository.save(profile);
+
+            oldUser.setParentId(null);
+            userRepository.save(oldUser);
+
+            user.setParentId(profile.getId());
+            userRepository.save(user);
+
         return ResponseEntity.ok(profile);
     }
 
     @PostMapping("/delete/{id}")
     ResponseEntity<?> deleteProfile(@PathVariable String id) {
         Profile profile = profileRepository.getById(id);
+
+        User userProfile = profile.getUser();
+        if (userProfile!=null) {
+            User user = userRepository.getById(userProfile.getId());
+            if (user!=null) {
+                user.setParentId(null);
+                userRepository.save(user);
+            }
+        }
         profileRepository.delete(profile);
         Map<String,String> inf = new HashMap<>();
         inf.put("SUCCESS","Profile Deleted");
         inf.put("code","0");
         return ResponseEntity.ok(inf);
     }
+
     private Set<AccessProfile> calcAccess(Set<String> strAccess) {
         Set<AccessProfile> access = new HashSet<>();
         AccessProfile profileAccess;

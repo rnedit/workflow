@@ -1,5 +1,6 @@
 package kz.spring.workflow.request;
 
+import kz.spring.workflow.domain.Role;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -24,6 +25,7 @@ public class SignupRequest {
     @NotNull
     private String lastName;
 
-    private Set<String> roles = new HashSet<>();
+    @NotNull
+    private Set<Role> roles = new HashSet<>();
 
 }
