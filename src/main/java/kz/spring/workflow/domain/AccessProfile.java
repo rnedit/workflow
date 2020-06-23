@@ -13,6 +13,8 @@ public class AccessProfile {
 
     private EAccessProfile name;
 
+    private String info;
+
     public AccessProfile(EAccessProfile name) {
         this.name = name;
     }

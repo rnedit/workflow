@@ -64,7 +64,7 @@ public class ProfileController {
                 profileRequest.getParentId(),
                 new Date()
         );
-        User user = userRepository.getByUsername(profileRequest.getUserId());
+        User user = userRepository.getByUsername(profileRequest.getUser().getUsername());
 
         User userProf = user.createBlankUser();
         userProf.setId(user.getId());
@@ -88,6 +88,7 @@ public class ProfileController {
     @PostMapping("/edit/{id}")
     ResponseEntity<?> editProfile(@PathVariable String id, @Valid @RequestBody ProfileRequest profileRequest,
                                   BindingResult bindingResult) {
+
         Map<String,String> error = new HashMap<>();
         if (bindingResult.hasErrors()) {
             error.put("ERROR","ProfileRequest null");
@@ -99,7 +100,7 @@ public class ProfileController {
         profile.setName(profileRequest.getName());
         profile.setParentId(profileRequest.getParentId());
 
-        User user = userRepository.getByUsername(profileRequest.getUserId());
+        User user = userRepository.getByUsername(profileRequest.getUser().getUsername());
 
         User oldUser = userRepository.getById(profileRequest.getOldUserId());
 

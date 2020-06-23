@@ -5,9 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.FetchType;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -25,16 +23,18 @@ public class Profile {
     @Size(max = 255)
     private String name;
 
-
     @Size(max = 255)
     private String parentId;
 
     @NotNull
     private Date creationDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
+    @NotNull
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "orgunits_id", nullable = false)
+    private OrgUnit orgUnit;
 
     @DBRef
     private Set<AccessProfile> access = new HashSet<>();

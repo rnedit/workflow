@@ -6,6 +6,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.persistence.FetchType;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -55,6 +58,9 @@ public class User {
 
     @NotNull
     private Integer refreshJwtMaxAge;
+
+    @NotNull
+    private Boolean editable = true;
 
     @DBRef
     private Set<Role> roles = new HashSet<>();

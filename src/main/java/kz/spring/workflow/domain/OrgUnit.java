@@ -2,17 +2,15 @@ package kz.spring.workflow.domain;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.FetchType;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
+
 
 @Data
 @Document(collection = "orgunits")
@@ -25,21 +23,13 @@ public class OrgUnit {
     @Size(max = 255)
     private String name;
 
-
-    @Size(max = 255)
-    private String parentId;
-
     @NotNull
-    private Date creationDate;
+    private Date creationDate = new Date();
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    private Profile profile;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "orgUnit")
+    private Set<Profile> profiles;
 
-
-    public OrgUnit(String name, String parentId, Date creationDate) {
+    public OrgUnit(String name) {
         this.name = name;
-        this.parentId = parentId;
-        this.creationDate = creationDate;
     }
 }

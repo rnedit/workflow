@@ -1,6 +1,7 @@
 package kz.spring.workflow.request;
 
 
+import kz.spring.workflow.domain.User;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -16,7 +17,10 @@ public class ProfileRequest {
     String parentId; //орг. единица
 
     @NotNull
-    String userId;
+    User user;
+
+   // @NotNull
+   // String userId;
 
     String oldUserId;
 

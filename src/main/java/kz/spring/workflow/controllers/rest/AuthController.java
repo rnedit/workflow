@@ -120,6 +120,10 @@ public class AuthController {
         response.addCookie(cookie);
 
         Date updatedDate = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(updatedDate);
+        cal.add(Calendar.SECOND, refreshJwtmaxAge);
+
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
         String ff;
         if (user.getCreationDate()!=null)
@@ -135,9 +139,10 @@ public class AuthController {
                 loggedIn,
                 jwtUserRefresh,
                 user.getRefreshJwtMaxAge(),
-                updatedDate,
+                cal.getTime(),
                 roles,
-                ff
+                ff,
+                user.getEditable()!=null?user.getEditable():true
         ));
 
        // return "redirect:/";
@@ -186,6 +191,10 @@ public class AuthController {
                 response.addCookie(cookie);
 
                 Date updatedDate = new Date();
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(updatedDate);
+                cal.add(Calendar.SECOND, refreshJwtmaxAge);
+
                 SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
                 String ff;
                 if (user.getCreationDate()!=null)
@@ -201,9 +210,10 @@ public class AuthController {
                         loggedIn,
                         jwtUserRefresh,
                         user.getRefreshJwtMaxAge(),
-                        updatedDate,
+                        cal.getTime(),
                         roles,
-                        ff
+                        ff,
+                        user.getEditable()!=null?user.getEditable():true
                 ));
             }
         }
