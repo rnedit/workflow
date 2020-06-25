@@ -16,6 +16,8 @@ public class ProfileRequest {
 
     String parentId; //орг. единица
 
+    String parentName; //орг. единица
+
     @NotNull
     User user;
 

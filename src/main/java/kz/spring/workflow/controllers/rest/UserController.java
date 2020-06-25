@@ -29,9 +29,9 @@ public class UserController {
     @Autowired
     ApiUtils apiUtils;
 
-    @PostMapping("/parentidnotnull")
+    @PostMapping("/parentidisnull")
     public ResponseEntity<?> getUsersByParentIdIsNull() {
-        List<User> users = userRepository.getUsersByParentIdIsNull();
+        Set<User> users = userRepository.getUsersByParentIdIsNull();
         return ResponseEntity.ok(users);
     }
 

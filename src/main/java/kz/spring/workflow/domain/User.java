@@ -52,7 +52,7 @@ public class User {
     private String refreshJwt;
 
     @NotNull
-    private Date creationDate;
+    private Date creationDate = new Date();
 
     private String parentId; //профайл
 
@@ -66,7 +66,7 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     public User(String username, String name, String email, String password, String firstName,
-                String lastName, Integer refreshJwtMaxAge, Date creationDate) {
+                String lastName, Integer refreshJwtMaxAge) {
         this.username = username;
         this.name = name;
         this.firstName = firstName;
@@ -74,7 +74,6 @@ public class User {
         this.email = email;
         this.password = password;
         this.refreshJwtMaxAge = refreshJwtMaxAge;
-        this.creationDate = creationDate;
     }
 
     private User () {}

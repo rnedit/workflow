@@ -2,6 +2,7 @@ package kz.spring.workflow.controllers.rest;
 
 import kz.spring.workflow.domain.*;
 import kz.spring.workflow.repository.AccessRepository;
+import kz.spring.workflow.repository.OrgUnitRepository;
 import kz.spring.workflow.repository.ProfileRepository;
 import kz.spring.workflow.repository.UserRepository;
 import kz.spring.workflow.request.ProfileRequest;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import java.util.*;
 
@@ -29,43 +31,49 @@ public class ProfileController {
     @Autowired
     AccessRepository accessRepository;
 
+    @Autowired
+    OrgUnitRepository orgUnitRepository;
+
     @PostMapping()
     public ResponseEntity<?> profiles(@Valid @RequestBody UsersRequest usersRequest,
                                       BindingResult bindingResult) {
-        Map<String,String> error = new HashMap<>();
+        Map<String, String> error = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            error.put("ERROR","UsersRequest null");
-            error.put("code","2");
+            error.put("ERROR", "UsersRequest null");
+            error.put("code", "2");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
 
-        Pageable sortedByName = PageRequest.of(usersRequest.getPage()-1, usersRequest.getPerpage());
-        Map<String,Object> data = new HashMap<>();
+        Pageable sortedByName = PageRequest.of(usersRequest.getPage() - 1, usersRequest.getPerpage());
+        Map<String, Object> data = new HashMap<>();
         Page<Profile> profiles = profileRepository.findAll(sortedByName);
         Collection<Profile> collection = profiles.getContent();
-        data.put("profiles", collection );
-        data.put("perpage",usersRequest.getPerpage());
-        data.put("page",usersRequest.getPage());
-        data.put("total",profileRepository.count());
+        data.put("profiles", collection);
+        data.put("perpage", usersRequest.getPerpage());
+        data.put("page", usersRequest.getPage());
+        data.put("total", profileRepository.count());
         return ResponseEntity.ok(data);
     }
+
     @PostMapping("/add")
     ResponseEntity<?> addProfile(@Valid @RequestBody ProfileRequest profileRequest,
                                  BindingResult bindingResult) {
-        Map<String,String> error = new HashMap<>();
+        Map<String, String> error = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            error.put("ERROR","ProfileRequest null");
-            error.put("code","2");
+            error.put("ERROR", "ProfileRequest null");
+            error.put("code", "2");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
 
         Profile profile = new Profile(
-                profileRequest.getName(),
-                profileRequest.getParentId(),
-                new Date()
+                profileRequest.getName()
+
         );
         User user = userRepository.getByUsername(profileRequest.getUser().getUsername());
-
+        //OrgUnit orgUnit = orgUnitRepository.getById(profileRequest.getParentId());
+        //if (orgUnit != null) {
+        //    profile.setParentId(orgUnit.getId());
+       // }
         User userProf = user.createBlankUser();
         userProf.setId(user.getId());
         userProf.setUsername(user.getUsername());
@@ -89,19 +97,16 @@ public class ProfileController {
     ResponseEntity<?> editProfile(@PathVariable String id, @Valid @RequestBody ProfileRequest profileRequest,
                                   BindingResult bindingResult) {
 
-        Map<String,String> error = new HashMap<>();
+        Map<String, String> error = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            error.put("ERROR","ProfileRequest null");
-            error.put("code","2");
+            error.put("ERROR", "ProfileRequest null");
+            error.put("code", "2");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
 
         Profile profile = profileRepository.getById(id);
         profile.setName(profileRequest.getName());
-        profile.setParentId(profileRequest.getParentId());
-
         User user = userRepository.getByUsername(profileRequest.getUser().getUsername());
-
         User oldUser = userRepository.getById(profileRequest.getOldUserId());
 
         User userProf = user.createBlankUser();
@@ -118,13 +123,13 @@ public class ProfileController {
         Set<AccessProfile> access = calcAccess(strAccess);
         profile.setAccess(access);
 
-            profileRepository.save(profile);
+        profileRepository.save(profile);
 
-            oldUser.setParentId(null);
-            userRepository.save(oldUser);
+        oldUser.setParentId(null);
+        userRepository.save(oldUser);
 
-            user.setParentId(profile.getId());
-            userRepository.save(user);
+        user.setParentId(profile.getId());
+        userRepository.save(user);
 
         return ResponseEntity.ok(profile);
     }
@@ -134,18 +139,24 @@ public class ProfileController {
         Profile profile = profileRepository.getById(id);
 
         User userProfile = profile.getUser();
-        if (userProfile!=null) {
+        if (userProfile != null) {
             User user = userRepository.getById(userProfile.getId());
-            if (user!=null) {
+            if (user != null) {
                 user.setParentId(null);
                 userRepository.save(user);
             }
         }
         profileRepository.delete(profile);
-        Map<String,String> inf = new HashMap<>();
-        inf.put("SUCCESS","Profile Deleted");
-        inf.put("code","0");
+        Map<String, String> inf = new HashMap<>();
+        inf.put("SUCCESS", "Profile Deleted");
+        inf.put("code", "0");
         return ResponseEntity.ok(inf);
+    }
+
+    @PostMapping("/parentidisnull")
+    public ResponseEntity<?> getProfilesByParentIdIsNull() {
+        Set<Profile> profiles = profileRepository.getProfilesByParentIdIsNull();
+        return ResponseEntity.ok(profiles);
     }
 
     private Set<AccessProfile> calcAccess(Set<String> strAccess) {
@@ -164,7 +175,7 @@ public class ProfileController {
             access.add(profileAccess);
         } else {
             if (!strAccess.isEmpty()) {
-                strAccess.forEach(acc ->{
+                strAccess.forEach(acc -> {
                     switch (acc) {
                         case "ACCESS_CREATEDOCUMENT":
                             AccessProfile profileAccess0 = accessRepository.findByName(EAccessProfile.ACCESS_CREATEDOCUMENT)

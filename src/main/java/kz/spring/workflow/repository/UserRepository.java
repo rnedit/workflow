@@ -1,13 +1,9 @@
 package kz.spring.workflow.repository;
 
 import kz.spring.workflow.domain.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
-
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserRepository extends MongoRepository<User, Long> {
     Optional<User> findByUsername(String username);
@@ -18,6 +14,6 @@ public interface UserRepository extends MongoRepository<User, Long> {
     Boolean existsByEmail(String email);
     Optional<User> findById(String id);
 
-    List<User> getUsersByParentIdIsNull();
+    Set<User> getUsersByParentIdIsNull();
 
 }

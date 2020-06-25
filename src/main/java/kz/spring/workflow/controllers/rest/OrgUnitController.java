@@ -3,10 +3,11 @@ package kz.spring.workflow.controllers.rest;
 import kz.spring.workflow.domain.OrgUnit;
 
 import kz.spring.workflow.domain.Profile;
-import kz.spring.workflow.domain.User;
 import kz.spring.workflow.repository.OrgUnitRepository;
 import kz.spring.workflow.repository.ProfileRepository;
 import kz.spring.workflow.request.OrgUnitsRequest;
+import kz.spring.workflow.request.SetOrgUnitRequest;
+import kz.spring.workflow.request.SetProfileRequest;
 import kz.spring.workflow.request.UsersRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,7 +32,7 @@ public class OrgUnitController {
     ProfileRepository profileRepository;
 
     @PostMapping()
-    public ResponseEntity<?> orgunits(@Valid @RequestBody UsersRequest usersRequest,
+    public ResponseEntity<?> orgUnits(@Valid @RequestBody UsersRequest usersRequest,
                                       BindingResult bindingResult) {
         Map<String,String> error = new HashMap<>();
         if (bindingResult.hasErrors()) {
@@ -55,11 +56,12 @@ public class OrgUnitController {
                                  BindingResult bindingResult) {
         Map<String,String> error = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            error.put("ERROR","ProfileRequest null");
+            error.put("ERROR","OrgUnitsRequest null");
             error.put("code","2");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
         OrgUnit orgUnit = new OrgUnit(orgUnitsRequest.getName());
+
         orgUnitRepository.save(orgUnit);
         return ResponseEntity.ok(orgUnit);
     }
@@ -69,7 +71,7 @@ public class OrgUnitController {
                                   BindingResult bindingResult) {
         Map<String,String> error = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            error.put("ERROR","ProfileRequest null");
+            error.put("ERROR","OrgUnitsRequest null");
             error.put("code","2");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
@@ -83,16 +85,143 @@ public class OrgUnitController {
     @PostMapping("/delete/{id}")
     ResponseEntity<?> deleteOrgUnit(@PathVariable String id) {
         OrgUnit orgUnit = orgUnitRepository.getById(id);
-        Set<Profile> profiles = orgUnit.getProfiles();
-        profiles.forEach(profile -> {
-            profile.setOrgUnit(null);
-            profileRepository.save(profile);
-        });
+        orgUnitRepository.delete(orgUnit);
 
         Map<String,String> inf = new HashMap<>();
-        inf.put("SUCCESS","Profile Deleted");
+        inf.put("SUCCESS","OrgUnit Deleted");
         inf.put("code","0");
         return ResponseEntity.ok(inf);
     }
 
+    @PostMapping("/getprofiles/{id}")
+    ResponseEntity<?> getProfiles(@PathVariable String id) {
+        OrgUnit orgUnit = orgUnitRepository.getById(id);
+        Map<String,Object> data = new HashMap<>();
+        data.put("profiles",orgUnit.getProfiles());
+        return ResponseEntity.ok(data);
+    }
+
+    @PostMapping("/getorgunits/{id}")
+    ResponseEntity<?> getOrgUnits(@PathVariable String id) {
+        OrgUnit orgUnit = orgUnitRepository.getById(id);
+        Map<String,Object> data = new HashMap<>();
+        data.put("orgunits",orgUnit.getOrgUnits());
+        return ResponseEntity.ok(data);
+    }
+    @PostMapping("/sethomeorgunit")
+    ResponseEntity<?> setHomeOrgUnit(@Valid @RequestBody SetOrgUnitRequest setOrgUnitsRequest,
+                                     BindingResult bindingResult) {
+        Map<String,String> error = new HashMap<>();
+        if (bindingResult.hasErrors()) {
+            error.put("ERROR","setHomeOrgUnit null");
+            error.put("code","2");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+        OrgUnit orgUnit = orgUnitRepository.getById(setOrgUnitsRequest.getId());
+        orgUnit.setHomeOrgUnit(setOrgUnitsRequest.getHomeOrgUnit());
+        orgUnitRepository.save(orgUnit);
+        return ResponseEntity.ok(orgUnit);
+    }
+
+    @PostMapping("/setprofiles/{id}")
+    ResponseEntity<?> setProfiles(@PathVariable String id,
+                                  @Valid @RequestBody List<SetProfileRequest> listProfilesRequest,
+                                  BindingResult bindingResult) {
+        Map<String,String> error = new HashMap<>();
+        if (bindingResult.hasErrors()) {
+            error.put("ERROR","setProfiles null");
+            error.put("code","2");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+        OrgUnit orgUnit = orgUnitRepository.getById(id);
+
+        Set<Profile> oldProfiles = orgUnit.getProfiles();
+        if (oldProfiles!=null) {
+            oldProfiles.forEach(profile -> {
+                profile.setParentId(null);
+                profile.setParentName(null);
+            });
+            profileRepository.saveAll(oldProfiles);
+            orgUnit.setProfiles(null);
+        }
+
+        Set<Profile> profileSet = new HashSet<>();
+        listProfilesRequest.forEach(reqProf->{
+            profileSet.add(profileRepository.getById(reqProf.getId()));
+        });
+        if (profileSet.size()>0) {
+            orgUnit.setProfiles(profileSet);
+            profileSet.forEach(profile -> {
+                profile.setParentId(orgUnit.getId());
+                profile.setParentName(orgUnit.getName());
+            });
+            profileRepository.saveAll(profileSet);
+        }
+        orgUnitRepository.save(orgUnit);
+
+        return ResponseEntity.ok(orgUnit.getProfiles());
+    }
+
+    @PostMapping("/setorgunits/{id}")
+    ResponseEntity<?> setOrgUnits(@PathVariable String id,
+                                  @Valid @RequestBody List<SetOrgUnitRequest> setOrgUnitRequestList,
+                                  BindingResult bindingResult) {
+        Map<String,String> error = new HashMap<>();
+        if (bindingResult.hasErrors()) {
+            error.put("ERROR","setOrgUnits null");
+            error.put("code","2");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+        OrgUnit orgUnit = orgUnitRepository.getById(id);
+
+        Set<OrgUnit> oldOrgUnits = orgUnit.getOrgUnits();
+        if (oldOrgUnits!=null) {
+            oldOrgUnits.forEach(o -> {
+                o.setParentId(null);
+                o.setParentName(null);
+            });
+            orgUnitRepository.saveAll(oldOrgUnits);
+            orgUnit.setOrgUnits(null);
+        }
+
+        Set<OrgUnit> orgUnitHashSet = new HashSet<>();
+        setOrgUnitRequestList.forEach(r->{
+            orgUnitHashSet.add(orgUnitRepository.getById(r.getId()));
+        });
+        if (orgUnitHashSet.size()>0) {
+            orgUnit.setOrgUnits(orgUnitHashSet);
+            orgUnitHashSet.forEach(o -> {
+                o.setParentId(orgUnit.getId());
+                o.setParentName(orgUnit.getName());
+            });
+            orgUnitRepository.saveAll(orgUnitHashSet);
+        }
+        orgUnitRepository.save(orgUnit);
+
+        return ResponseEntity.ok(orgUnit.getOrgUnits());
+    }
+    ///api/orgunits
+    @PostMapping("/getorgunitsbyparentidisnullandidisnot/{id}")
+    ResponseEntity<?> getOrgUnitsByParentIdIsNullAndIdIsNot(@PathVariable String id) {
+        OrgUnit orgUnit = orgUnitRepository.getById(id);
+        Set<OrgUnit> orgUnits= orgUnit.getOrgUnits();
+        Set<OrgUnit> ParentIdIsNullAndIdIsNot = orgUnitRepository.getOrgUnitsByParentIdIsNullAndIdIsNot(id);
+        Map<String,Object> data = new HashMap<>();
+        data.put("orgUnits",orgUnits);
+        data.put("ParentIdIsNullAndIdIsNot",ParentIdIsNullAndIdIsNot);
+        return ResponseEntity.ok(data);
+    }
+///api/orgunits
+    @PostMapping("/getprofilesandprofilesparentidisnull/{id}")
+    ResponseEntity<?> getProfilesAndProfilesParentIdIsNull(@PathVariable String id) {
+        OrgUnit orgUnit = orgUnitRepository.getById(id);
+        Set<OrgUnit> orgUnitsForParent = orgUnitRepository.getOrgUnitsByParentIdIsNullAndIdIsNot(id);
+        Set<Profile> profiles = orgUnit.getProfiles();
+        Set<Profile> profilesParentIdIsNull = profileRepository.getProfilesByParentIdIsNull();
+        Map<String,Object> data = new HashMap<>();
+        data.put("profiles",profiles);
+        data.put("profilesParentIdIsNull",profilesParentIdIsNull);
+
+        return ResponseEntity.ok(data);
+    }
 }

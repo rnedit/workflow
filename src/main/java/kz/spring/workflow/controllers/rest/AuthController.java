@@ -114,7 +114,7 @@ public class AuthController {
          */
         Cookie cookie = new Cookie("jwtID", jwt);
         cookie.setPath("/");
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setHttpOnly(true);
         cookie.setMaxAge(cookieMaxAgeS);
         response.addCookie(cookie);
@@ -253,8 +253,7 @@ public class AuthController {
         }
 
         // Create new user's account
-        User user = null;
-            user = new User(
+        User   user = new User(
                     signUpRequest.getUsername(),
                     signUpRequest.getName(),
                     signUpRequest.getEmail(),
@@ -263,8 +262,7 @@ public class AuthController {
                     signUpRequest.getLastName(),
 
                     //jwtUtils.createRefreshToken(),
-                    refreshJwtmaxAge,
-                    new Date()
+                    refreshJwtmaxAge
             );
 
 
