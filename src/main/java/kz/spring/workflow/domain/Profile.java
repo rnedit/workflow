@@ -29,7 +29,7 @@ public class Profile {
     private String parentId; //<<- OrgUnit ID
 
     @Size(max = 255)
-    private String parentName; //<<- OrgUnit ID
+    private String parentName; //<<- OrgUnit Name
 
     @NotNull
     private Date creationDate = new Date();

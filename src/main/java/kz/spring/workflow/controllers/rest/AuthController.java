@@ -1,5 +1,6 @@
 package kz.spring.workflow.controllers.rest;
 
+import kz.spring.workflow.domain.EAccessProfile;
 import kz.spring.workflow.domain.ERole;
 import kz.spring.workflow.domain.Role;
 import kz.spring.workflow.domain.User;
@@ -114,7 +115,7 @@ public class AuthController {
          */
         Cookie cookie = new Cookie("jwtID", jwt);
         cookie.setPath("/");
-        cookie.setSecure(false);
+        cookie.setSecure(false); //<---------------------------------------------
         cookie.setHttpOnly(true);
         cookie.setMaxAge(cookieMaxAgeS);
         response.addCookie(cookie);
@@ -225,7 +226,8 @@ public class AuthController {
     }
 
     @PostMapping("/api/auth/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
+                                          BindingResult bindingResult) {
         Map<String,String> error = new HashMap<>();
 
         if (bindingResult.hasErrors()) {

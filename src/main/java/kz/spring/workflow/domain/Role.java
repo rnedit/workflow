@@ -13,7 +13,8 @@ public class Role {
 
     private ERole name;
 
-    public Role(ERole name) {
+    public Role(String id, ERole name) {
+        this.id = id;
         this.name = name;
     }
 

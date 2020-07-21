@@ -19,6 +19,7 @@ public class JwtResponse {
     Boolean editable;
 
     Date updatedJwt;
+
     List<ERole> roles;
 
     String creationDate;
@@ -27,7 +28,7 @@ public class JwtResponse {
                         String username,
                         String firstName,
                         String lastName,
-                         String name,
+                        String name,
                         Boolean loggedIn,
                         String refreshJwt,
                         Integer refreshJwtMaxAge,

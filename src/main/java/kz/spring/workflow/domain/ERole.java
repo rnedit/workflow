@@ -10,5 +10,6 @@ public enum ERole {
 
         ERole(int i, String role_user) {
         }
+
 }
 
