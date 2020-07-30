@@ -1,7 +1,11 @@
 package kz.spring.workflow.events.workflowEventHandler;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
 
+@Getter
+@Setter
 public class WorkflowEventHandler extends ApplicationEvent {
     private Boolean state = false;
     private String eventName;
@@ -22,31 +26,4 @@ public class WorkflowEventHandler extends ApplicationEvent {
         this.jobId = jobId;
     }
 
-    public Boolean getState() {
-        return state;
-    }
-
-    public String getEventName() {
-        return eventName;
-    }
-
-    public String getUserNameCreation() {
-        return userNameCreation;
-    }
-
-    public String getStatusExec() {
-        return statusExec;
-    }
-
-    public void setState(Boolean state) {
-        this.state = state;
-    }
-
-    public String getJobId() {
-        return jobId;
-    }
-
-    public String getDocumentId() {
-        return documentId;
-    }
 }
