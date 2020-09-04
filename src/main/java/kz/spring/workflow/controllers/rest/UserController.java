@@ -36,7 +36,7 @@ public class UserController {
 
     @PostMapping("/parentidisnull")
     public ResponseEntity<?> getUsersByParentIdIsNull() {
-        Set<User> users = userRepository.getUsersByParentIdIsNull();
+        Set<User> users = userRepository.getUsersByParentIdProfileIsNull();
         return ResponseEntity.ok(users);
     }
 
@@ -46,12 +46,12 @@ public class UserController {
         Map<String, String> error = new HashMap<>();
 
         if (user != null) {
-            if (user.getParentId() == null) {
+            if (user.getParentIdProfile() == null) {
                 error.put("ERROR", "user.getParentId() null");
                 error.put("code", "2");
                 return ResponseEntity.ok(error);
             }
-            Profile profile = profileRepository.getById(user.getParentId());
+            Profile profile = profileRepository.getById(user.getParentIdProfile());
             if (profile != null) {
                 Map<String, Object> data = new HashMap<>();
                 data.put("accessprofile", profile.getAccess());

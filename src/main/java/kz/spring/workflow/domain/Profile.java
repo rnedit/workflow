@@ -35,6 +35,9 @@ public class Profile {
     private Date creationDate = new Date();
 
     @NotNull
+    private String suffix;
+
+    @NotNull
     private User user;
 
     @DBRef

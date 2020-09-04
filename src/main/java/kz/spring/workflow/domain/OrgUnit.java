@@ -35,6 +35,9 @@ public class OrgUnit {
     private Boolean homeOrgUnit = false;
 
     @NotNull
+    private String suffix;
+
+    @NotNull
     private Date creationDate = new Date();
 
     @DBRef
@@ -46,4 +49,5 @@ public class OrgUnit {
     public OrgUnit(String name) {
         this.name = name;
     }
+
 }

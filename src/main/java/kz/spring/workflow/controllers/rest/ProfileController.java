@@ -88,7 +88,7 @@ public class ProfileController {
         Set<AccessProfile> access = calcAccess(strAccess);
         profile.setAccess(access);
         profileRepository.save(profile);
-        user.setParentId(profile.getId());
+        user.setParentIdProfile(profile.getId());
         userRepository.save(user);
         return ResponseEntity.ok(profile);
     }
@@ -125,10 +125,10 @@ public class ProfileController {
 
         profileRepository.save(profile);
 
-        oldUser.setParentId(null);
+        oldUser.setParentIdProfile(null);
         userRepository.save(oldUser);
 
-        user.setParentId(profile.getId());
+        user.setParentIdProfile(profile.getId());
         userRepository.save(user);
 
         return ResponseEntity.ok(profile);
@@ -142,7 +142,7 @@ public class ProfileController {
         if (userProfile != null) {
             User user = userRepository.getById(userProfile.getId());
             if (user != null) {
-                user.setParentId(null);
+                user.setParentIdProfile(null);
                 userRepository.save(user);
             }
         }
