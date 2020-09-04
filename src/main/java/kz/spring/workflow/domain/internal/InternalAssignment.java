@@ -1,11 +1,11 @@
-package kz.spring.workflow.domain;
+package kz.spring.workflow.domain.internal;
 
-
-import kz.spring.workflow.domain.Types.InternalType;
+import kz.spring.workflow.domain.Profile;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
@@ -13,9 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@Document(collection = "internal")
-public class Internal {
-
+@Document(collection = "internalAssignment")
+public class InternalAssignment {
     @Id
     private String id;
 
@@ -23,29 +22,29 @@ public class Internal {
     private Date CreationDate = new Date();
 
     @NotNull
-    private String Subject;
-
-    @NotNull
     private String Number;
 
+    //AccessBlock
     @NotNull
-    private String RecipientProfileId;
+    private List<String> Performers;
 
     @NotNull
-    private String RecipientProfileName;
-
-    @NotNull
-    private Integer TypeAgreement = InternalType.NO_AGREEMENT;
-
-    @NotNull
-    private Boolean Draft = false;
-
     private List<String> AllReaders;
 
     private List<String> AllReadersRoles;
+    //
 
+    @NotNull
     @DBRef
-    private Set<InternalAssignment> internalAssignments = new HashSet<>();
+    private Set<Profile> profilesPerformers = new HashSet<>();
+
+    @NotNull
+    @DBRef
+    private Set<Profile> profilesAllReaders = new HashSet<>();
+
+    @NotNull
+    @DBRef
+    private Internal internal;
 
     @DBRef
     private Set<InternalPerformed> internalPerformeds = new HashSet<>();

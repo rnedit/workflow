@@ -1,41 +1,40 @@
 package kz.spring.workflow.controllers.rest;
 
 import kz.spring.workflow.domain.*;
+import kz.spring.workflow.domain.internal.Internal;
+import kz.spring.workflow.facades.internal.impl.InternalFacadeImpl;
 import kz.spring.workflow.repository.Impl.InternalDALImpl;
-import kz.spring.workflow.repository.InternalRepository;
-import kz.spring.workflow.repository.ProfileRepository;
 import kz.spring.workflow.repository.UserRepository;
 import kz.spring.workflow.request.InternalRequest;
-import kz.spring.workflow.request.UsersRequest;
+import kz.spring.workflow.request.InternalTableRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.*;
 
 @RestController
 @PreAuthorize("hasAnyRole('USER','ADMIN','MODERATOR')")
-@RequestMapping("/api/internals/getInternals")
+@RequestMapping("/api/internals")
 public class InternalController {
 
     @Autowired
     private InternalDALImpl internalDAL;
 
     @Autowired
+    private InternalFacadeImpl internalFacade;
+
+    @Autowired
     private UserRepository userRepository;
 
-    @PostMapping()
-    public ResponseEntity<?> internals(@Valid @RequestBody InternalRequest internalRequest,
+    @PostMapping("/getInternals")
+    public ResponseEntity<?> getInternals(@Valid @RequestBody InternalTableRequest internalRequest,
                                        BindingResult bindingResult) {
         Map<String, String> error = new HashMap<>();
         if (bindingResult.hasErrors()) {
@@ -60,7 +59,7 @@ public class InternalController {
             return ResponseEntity.ok(data);
         } else {
             Set<String> roles = new HashSet<>();
-            user.getRoles().forEach(r->{
+            user.getRoles().forEach(r -> {
                 roles.add(r.getId());
             });
             List<Internal> internalList = internalDAL.getAllMainOfRoles(roles, pageble);
@@ -70,5 +69,18 @@ public class InternalController {
             data.put("total", internalList.size());
             return ResponseEntity.ok(data);
         }
+    }
+
+    @PostMapping("/getInternal")
+    public ResponseEntity<?> getInternal(@Valid @RequestBody InternalRequest internalRequest,
+                                         BindingResult bindingResult) {
+        Map<String, String> error = new HashMap<>();
+        if (bindingResult.hasErrors()) {
+            error.put("ERROR", "getInternal id isEmpty or null");
+            error.put("code", "2");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+        return ResponseEntity.ok(internalFacade.getInternal(internalRequest.getId()));
+
     }
 }

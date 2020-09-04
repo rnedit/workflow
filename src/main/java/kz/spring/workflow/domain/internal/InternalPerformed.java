@@ -1,5 +1,6 @@
-package kz.spring.workflow.domain;
+package kz.spring.workflow.domain.internal;
 
+import kz.spring.workflow.domain.Profile;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -12,8 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@Document(collection = "internalAssignment")
-public class InternalAssignment {
+@Document(collection = "internalPerformed")
+public class InternalPerformed {
     @Id
     private String id;
 
@@ -23,19 +24,18 @@ public class InternalAssignment {
     @NotNull
     private String Number;
 
+    //AccessBlock
     @NotNull
-    private String RecipientProfileId;
-
-    @NotNull
-    private String RecipientProfileName;
-
     private List<String> AllReaders;
 
     private List<String> AllReadersRoles;
+    //
 
+    @NotNull
     @DBRef
-    private Internal internal;
+    private Set<Profile> profilesAllReaders = new HashSet<>();
 
+    @NotNull
     @DBRef
-    private Set<InternalPerformed> internalPerformeds = new HashSet<>();
+    private InternalAssignment internalAssignment;
 }

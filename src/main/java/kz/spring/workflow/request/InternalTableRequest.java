@@ -6,9 +6,17 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class InternalRequest {
+public class InternalTableRequest {
+
 
     @NotEmpty
     @NotNull
-    private String id;
+    String userId;
+
+    @NotNull
+    Integer page = 1;
+
+    @NotNull
+    Integer perPage = 15;
+
 }

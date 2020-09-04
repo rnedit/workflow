@@ -1,4 +1,4 @@
-package kz.spring.workflow.domain.Types;
+package kz.spring.workflow.domain.internal.types;
 
 public class InternalType {
     public static final Integer NO_AGREEMENT = 0;

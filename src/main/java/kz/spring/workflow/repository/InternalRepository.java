@@ -1,6 +1,6 @@
 package kz.spring.workflow.repository;
 
-import kz.spring.workflow.domain.Internal;
+import kz.spring.workflow.domain.internal.Internal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
