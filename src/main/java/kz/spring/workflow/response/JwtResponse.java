@@ -1,10 +1,12 @@
 package kz.spring.workflow.response;
 
 import kz.spring.workflow.domain.ERole;
+import kz.spring.workflow.domain.Profile;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class JwtResponse {
@@ -22,7 +24,11 @@ public class JwtResponse {
 
     List<ERole> roles;
 
+    Set<String> rolesId;
+
     String creationDate;
+
+    Profile profile;
 
     public JwtResponse(  String id,
                         String username,
@@ -34,8 +40,10 @@ public class JwtResponse {
                         Integer refreshJwtMaxAge,
                         Date updatedJwt,
                         List<ERole> roles,
+                         Set<String> rolesId,
                         String creationDate,
-                        Boolean editable
+                        Boolean editable,
+                         Profile profile
     ) {
         this.id = id;
         this.username = username;
@@ -47,8 +55,10 @@ public class JwtResponse {
         this.refreshJwtMaxAge = refreshJwtMaxAge;
         this.updatedJwt = updatedJwt;
         this.roles = roles;
+        this.rolesId = rolesId;
         this.creationDate = creationDate;
         this.editable = editable;
+        this.profile = profile;
     }
 
 }

@@ -5,8 +5,10 @@ import kz.spring.workflow.domain.internal.Internal;
 import kz.spring.workflow.facades.internal.impl.InternalFacadeImpl;
 import kz.spring.workflow.repository.Impl.InternalDALImpl;
 import kz.spring.workflow.repository.UserRepository;
-import kz.spring.workflow.request.InternalRequest;
-import kz.spring.workflow.request.InternalTableRequest;
+import kz.spring.workflow.request.internal.InternalRequest;
+import kz.spring.workflow.request.internal.InternalSaveRequest;
+import kz.spring.workflow.request.internal.InternalTableRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.*;
 
+@Slf4j
 @RestController
 @PreAuthorize("hasAnyRole('USER','ADMIN','MODERATOR')")
 @RequestMapping("/api/internals")
@@ -81,6 +84,24 @@ public class InternalController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
         return ResponseEntity.ok(internalFacade.getInternal(internalRequest.getId()));
+
+    }
+
+    @PostMapping("/saveInternal")
+    public ResponseEntity<?> saveInternal(@Valid @RequestBody InternalSaveRequest internalSaveRequest,
+                                         BindingResult bindingResult) {
+        log.info(String.valueOf(internalSaveRequest));
+        Map<String, String> error = new HashMap<>();
+        if (bindingResult.hasErrors()) {
+
+            error.put("ERROR", "InternalSaveRequest id isEmpty or null");
+            error.put("code", "2");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+
+        internalFacade.saveInternal(internalSaveRequest);
+
+        return ResponseEntity.ok("ok");
 
     }
 }

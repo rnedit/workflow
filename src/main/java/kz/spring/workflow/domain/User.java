@@ -60,6 +60,9 @@ public class User {
     @DBRef
     private Set<Role> roles = new HashSet<>();
 
+    @NotNull
+    private Set<String> rolesId = new HashSet<>();
+
     public User(String username, String name, String email, String password, String firstName,
                 String lastName, Integer refreshJwtMaxAge) {
         this.username = username;

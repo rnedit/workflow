@@ -1,4 +1,4 @@
-package kz.spring.workflow.request;
+package kz.spring.workflow.request.internal;
 
 import lombok.Data;
 

@@ -2,6 +2,7 @@ package kz.spring.workflow.domain.internal;
 
 
 import kz.spring.workflow.domain.Profile;
+import kz.spring.workflow.domain.User;
 import kz.spring.workflow.domain.internal.types.InternalType;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -35,15 +36,24 @@ public class Internal {
     @NotNull
     private Boolean Draft = false;
 
+    
     //AccessBlock
     @NotNull
-    private String Recipient;
+    private String Recipient; //id
 
     @NotNull
-    private List<String> AllReaders;
+    private List<String> AllReaders; //ids
 
-    private List<String> AllReadersRoles;
+    private List<String> AllReadersRoles; //ids
+
     //
+
+
+    @DBRef
+    private Profile сreatorProfile;
+
+    @DBRef
+    private User сreatorUser;
 
     @NotNull
     @DBRef

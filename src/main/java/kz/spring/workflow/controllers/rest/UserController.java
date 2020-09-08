@@ -47,9 +47,10 @@ public class UserController {
 
         if (user != null) {
             if (user.getParentIdProfile() == null) {
-                error.put("ERROR", "user.getParentId() null");
-                error.put("code", "2");
-                return ResponseEntity.ok(error);
+                Map<String, Object> data = new HashMap<>();
+                data.put("SUCCESS", "user.getParentId() null");
+                data.put("accessprofile", null);
+                return ResponseEntity.ok(data);
             }
             Profile profile = profileRepository.getById(user.getParentIdProfile());
             if (profile != null) {
@@ -60,7 +61,7 @@ public class UserController {
         }
         error.put("ERROR", "user null");
         error.put("code", "2");
-        return ResponseEntity.ok(error);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @PostMapping()

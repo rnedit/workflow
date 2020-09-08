@@ -159,6 +159,12 @@ public class ProfileController {
         return ResponseEntity.ok(profiles);
     }
 
+    @PostMapping("/parentidnotnull")
+    public ResponseEntity<?> getProfilesByParentIdNotNull() {
+        Set<Profile> profiles = profileRepository.getProfilesByParentIdNotNull();
+        return ResponseEntity.ok(profiles);
+    }
+
     private Set<AccessProfile> calcAccess(Set<String> strAccess) {
         Set<AccessProfile> access = new HashSet<>();
         AccessProfile profileAccess;

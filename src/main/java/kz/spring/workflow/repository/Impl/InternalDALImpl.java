@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ public class InternalDALImpl implements InternalDAL {
         return mongoTemplate.findAll(Internal.class);
     }
 
+    @Transactional
     @Override
     public Internal saveInternal(Internal internal) {
         if (internal == null) {

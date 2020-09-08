@@ -149,6 +149,8 @@ public class OrgUnitController {
         listProfilesRequest.forEach(reqProf->{
             profileSet.add(profileRepository.getById(reqProf.getId()));
         });
+        Set<OrgUnit> orgUnits = new HashSet<>();
+        orgUnits.add(orgUnit);
         if (profileSet.size()>0) {
             orgUnit.setProfiles(profileSet);
             profileSet.forEach(profile -> {

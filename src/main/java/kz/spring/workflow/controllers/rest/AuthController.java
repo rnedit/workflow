@@ -1,9 +1,7 @@
 package kz.spring.workflow.controllers.rest;
 
-import kz.spring.workflow.domain.EAccessProfile;
-import kz.spring.workflow.domain.ERole;
-import kz.spring.workflow.domain.Role;
-import kz.spring.workflow.domain.User;
+import kz.spring.workflow.domain.*;
+import kz.spring.workflow.repository.ProfileRepository;
 import kz.spring.workflow.repository.RoleRepository;
 import kz.spring.workflow.repository.UserRepository;
 import kz.spring.workflow.request.RefreshJwt;
@@ -50,6 +48,9 @@ public class AuthController {
     UserRepository userRepository;
 
     @Autowired
+    ProfileRepository profileRepository;
+
+    @Autowired
     RoleRepository roleRepository;
 
     @Autowired
@@ -94,9 +95,21 @@ public class AuthController {
         user.setRefreshJwt(jwtUserRefresh);
         userRepository.save(user);
 
+        Profile profile = profileRepository.getById(user.getParentIdProfile());
+
+        if (profile==null) {
+            profile = new Profile("Профайла нет");
+            profile.setId("0");
+        }
+
         List<ERole> roles = new ArrayList<>();
         user.getRoles().iterator().forEachRemaining(role -> {
             roles.add(role.getName());
+        });
+
+        Set<String> rolesId = new HashSet<>();
+        user.getRoles().iterator().forEachRemaining(role -> {
+            rolesId.add(role.getId());
         });
 
         //Отправка кук пользователю для дальнейших запросов от фронтенда, нужна следующая конфигурация на бакенде
@@ -142,8 +155,10 @@ public class AuthController {
                 user.getRefreshJwtMaxAge(),
                 cal.getTime(),
                 roles,
+                rolesId,
                 ff,
-                user.getEditable()!=null?user.getEditable():true
+                user.getEditable()!=null?user.getEditable():true,
+                profile
         ));
 
        // return "redirect:/";
@@ -177,9 +192,21 @@ public class AuthController {
                 user.setRefreshJwt(jwtUserRefresh);
                 userRepository.save(user);
 
+                Profile profile = profileRepository.getById(user.getParentIdProfile());
+
+                if (profile==null) {
+                    profile = new Profile("Профайла нет");
+                    profile.setId("0");
+                }
+
                 List<ERole> roles = new ArrayList<>();
                 user.getRoles().iterator().forEachRemaining(role -> {
                     roles.add(role.getName());
+                });
+
+                Set<String> rolesId = new HashSet<>();
+                user.getRoles().iterator().forEachRemaining(role -> {
+                    rolesId.add(role.getId());
                 });
 
                 Boolean loggedIn = false;
@@ -213,8 +240,10 @@ public class AuthController {
                         user.getRefreshJwtMaxAge(),
                         cal.getTime(),
                         roles,
+                        rolesId,
                         ff,
-                        user.getEditable()!=null?user.getEditable():true
+                        user.getEditable()!=null?user.getEditable():true,
+                        profile
                 ));
             }
         }
