@@ -26,10 +26,16 @@ import java.util.*;
 @PreAuthorize("hasAnyRole('USER','ADMIN','MODERATOR')")
 @RequestMapping("/api/orgunits")
 public class OrgUnitController {
-    @Autowired
-    OrgUnitRepository orgUnitRepository;
-    @Autowired
-    ProfileRepository profileRepository;
+
+    final
+    private OrgUnitRepository orgUnitRepository;
+    final
+    private ProfileRepository profileRepository;
+
+    public OrgUnitController(OrgUnitRepository orgUnitRepository, ProfileRepository profileRepository) {
+        this.orgUnitRepository = orgUnitRepository;
+        this.profileRepository = profileRepository;
+    }
 
     @PostMapping()
     public ResponseEntity<?> orgUnits(@Valid @RequestBody UsersRequest usersRequest,

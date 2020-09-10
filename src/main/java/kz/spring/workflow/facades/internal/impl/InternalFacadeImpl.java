@@ -12,7 +12,6 @@ import kz.spring.workflow.repository.UserRepository;
 import kz.spring.workflow.request.internal.InternalSaveRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.ObjectNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,24 +20,31 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static kz.spring.workflow.tasks.types.InternalTaskType.*;
+
 @Slf4j
 @Service
 public class InternalFacadeImpl implements InternalFacade {
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    InternalDALImpl internalDAL;
+    private final InternalDALImpl internalDAL;
 
-    @Autowired
-    EventQueueHandlerPublisher eventQueueHandlerPublisher;
+    private final EventQueueHandlerPublisher eventQueueHandlerPublisher;
 
     @Value("${mongodb.rootIdAllReaders}")
     String allReadersRootUser;
 
-    @Autowired
-    ProfileRepository profileRepository;
+    private final ProfileRepository profileRepository;
+
+    public InternalFacadeImpl(UserRepository userRepository, InternalDALImpl internalDAL,
+                              EventQueueHandlerPublisher eventQueueHandlerPublisher,
+                              ProfileRepository profileRepository) {
+        this.userRepository = userRepository;
+        this.internalDAL = internalDAL;
+        this.eventQueueHandlerPublisher = eventQueueHandlerPublisher;
+        this.profileRepository = profileRepository;
+    }
 
     @Override
     public Internal getInternal(String id) {
@@ -46,7 +52,7 @@ public class InternalFacadeImpl implements InternalFacade {
     }
 
     @Override
-    public Internal saveInternal(InternalSaveRequest internalSaveRequest){
+    public Internal saveInternal(InternalSaveRequest internalSaveRequest) {
         Internal internal = new Internal();
         internal.setSubject(internalSaveRequest.getSubject());
         internal.setRecipient(internalSaveRequest.getRecipient());
@@ -108,7 +114,7 @@ public class InternalFacadeImpl implements InternalFacade {
         EventQueue eventQueue = new EventQueue();
         eventQueue.setCreatorUserId(internalSaveRequest.getСreatorUserId());
         eventQueue.setDocumentId(newInternal.getId());
-        eventQueue.setTaskName("saveInternal");
+        eventQueue.setTaskName(TASK_SAVEINTERNAL);
 
         eventQueueHandlerPublisher.doEventHandler(eventQueue);
 

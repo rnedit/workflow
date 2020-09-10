@@ -24,15 +24,22 @@ import java.util.*;
 @PreAuthorize("hasAnyRole('USER','ADMIN','MODERATOR')")
 @RequestMapping("/api/profiles")
 public class ProfileController {
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    ProfileRepository profileRepository;
-    @Autowired
-    AccessRepository accessRepository;
+    final
+    private UserRepository userRepository;
+    final
+    private ProfileRepository profileRepository;
+    final
+    private AccessRepository accessRepository;
 
-    @Autowired
-    OrgUnitRepository orgUnitRepository;
+    final
+    private OrgUnitRepository orgUnitRepository;
+
+    public ProfileController(UserRepository userRepository, ProfileRepository profileRepository, AccessRepository accessRepository, OrgUnitRepository orgUnitRepository) {
+        this.userRepository = userRepository;
+        this.profileRepository = profileRepository;
+        this.accessRepository = accessRepository;
+        this.orgUnitRepository = orgUnitRepository;
+    }
 
     @PostMapping()
     public ResponseEntity<?> profiles(@Valid @RequestBody UsersRequest usersRequest,

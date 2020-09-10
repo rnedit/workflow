@@ -12,8 +12,11 @@ import java.util.Set;
 @Service
 public class OrgUnitService {
 
-    @Autowired
-    private ProfileRepository profileRepository;
+    private final ProfileRepository profileRepository;
+
+    public OrgUnitService(ProfileRepository profileRepository) {
+        this.profileRepository = profileRepository;
+    }
 
     @Transactional
     public void setSuffixAllChaild(OrgUnit orgUnit, String s) {

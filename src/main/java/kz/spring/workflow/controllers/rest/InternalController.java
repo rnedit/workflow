@@ -27,14 +27,17 @@ import java.util.*;
 @RequestMapping("/api/internals")
 public class InternalController {
 
-    @Autowired
-    private InternalDALImpl internalDAL;
+    private final InternalDALImpl internalDAL;
 
-    @Autowired
-    private InternalFacadeImpl internalFacade;
+    private final InternalFacadeImpl internalFacade;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public InternalController(InternalDALImpl internalDAL, InternalFacadeImpl internalFacade, UserRepository userRepository) {
+        this.internalDAL = internalDAL;
+        this.internalFacade = internalFacade;
+        this.userRepository = userRepository;
+    }
 
     @PostMapping("/getInternals")
     public ResponseEntity<?> getInternals(@Valid @RequestBody InternalTableRequest internalRequest,

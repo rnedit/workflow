@@ -41,29 +41,28 @@ import kz.spring.workflow.controllers.rest.utils.*;
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+    final
+    private AuthenticationManager authenticationManager;
 
-    @Autowired
-    UserRepository userRepository;
+    final
+    private UserRepository userRepository;
 
-    @Autowired
-    ProfileRepository profileRepository;
+    final
+    private ProfileRepository profileRepository;
 
-    @Autowired
-    RoleRepository roleRepository;
+    final
+    private RoleRepository roleRepository;
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    PasswordEncoder encoder;
+    final
+    private PasswordEncoder encoder;
 
-    @Autowired
-    JwtUtils jwtUtils;
+    final
+    private JwtUtils jwtUtils;
 
-    @Autowired
-    ApiUtils apiUtils;
+    final
+    private ApiUtils apiUtils;
 
     @Value("${cookie.maxAge}")
     private int cookieMaxAgeS;
@@ -71,6 +70,16 @@ public class AuthController {
     @Value("${refreshJwt.maxAge}")
     private int refreshJwtmaxAge;
 
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, ProfileRepository profileRepository, RoleRepository roleRepository, UserDetailsServiceImpl userDetailsService, PasswordEncoder encoder, JwtUtils jwtUtils, ApiUtils apiUtils) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.profileRepository = profileRepository;
+        this.roleRepository = roleRepository;
+        this.userDetailsService = userDetailsService;
+        this.encoder = encoder;
+        this.jwtUtils = jwtUtils;
+        this.apiUtils = apiUtils;
+    }
 
     @PostMapping("/api/auth/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,

@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.List;
 
 public class InternalAssignmentDALImpl implements InternalAssignmentDAL {
+
     @Autowired
     private MongoTemplate mongoTemplate;
 

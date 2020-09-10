@@ -19,8 +19,11 @@ import java.util.Set;
 @Repository
 public class InternalDALImpl implements InternalDAL {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
+
+    public InternalDALImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @Override
     public List<Internal> getAllInternals() {
@@ -102,6 +105,7 @@ public class InternalDALImpl implements InternalDAL {
         query.addCriteria(Criteria
                 .where("allReadersRoles").all(Roles)
                 .and("draft").is(false)
+                .and("number").ne(null)
 
         );
         return getInternals(query);
@@ -120,6 +124,7 @@ public class InternalDALImpl implements InternalDAL {
         query.addCriteria(Criteria
                 .where("allReaders").all(profileId)
                 .and("draft").is(false)
+                .and("number").ne(null)
 
         );
         return getInternals(query);

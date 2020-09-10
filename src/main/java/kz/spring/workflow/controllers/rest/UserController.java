@@ -25,14 +25,20 @@ import java.util.*;
 @RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    UserRepository userRepository;
+    final
+    private UserRepository userRepository;
 
-    @Autowired
-    ProfileRepository profileRepository;
+    final
+    private ProfileRepository profileRepository;
 
-    @Autowired
-    ApiUtils apiUtils;
+    final
+    private ApiUtils apiUtils;
+
+    public UserController(UserRepository userRepository, ProfileRepository profileRepository, ApiUtils apiUtils) {
+        this.userRepository = userRepository;
+        this.profileRepository = profileRepository;
+        this.apiUtils = apiUtils;
+    }
 
     @PostMapping("/parentidisnull")
     public ResponseEntity<?> getUsersByParentIdIsNull() {

@@ -21,10 +21,15 @@ import java.util.stream.Stream;
 @RequestMapping("/api/structuretree")
 public class StructureTreeController {
 
-    @Autowired
-    OrgUnitRepository orgUnitRepository;
-    @Autowired
-    ProfileRepository profileRepository;
+    final
+    private OrgUnitRepository orgUnitRepository;
+    final
+    private ProfileRepository profileRepository;
+
+    public StructureTreeController(OrgUnitRepository orgUnitRepository, ProfileRepository profileRepository) {
+        this.orgUnitRepository = orgUnitRepository;
+        this.profileRepository = profileRepository;
+    }
 
     @PostMapping()
     public ResponseEntity<?> getAllStructureTree() {

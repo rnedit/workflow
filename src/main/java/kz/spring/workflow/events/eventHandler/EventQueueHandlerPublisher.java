@@ -14,11 +14,16 @@ https://www.baeldung.com/spring-events
 @Component
 public class EventQueueHandlerPublisher {
 
-    @Autowired
-    EventQueueRepository eventQueueRepository;
+    final
+    private EventQueueRepository eventQueueRepository;
 
-    @Autowired
-    ApplicationEventPublisher applicationEventPublisher;
+    final
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    public EventQueueHandlerPublisher(EventQueueRepository eventQueueRepository, ApplicationEventPublisher applicationEventPublisher) {
+        this.eventQueueRepository = eventQueueRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     public void doEventHandler (
             EventQueue eventQueue

@@ -19,8 +19,6 @@ public abstract class AbstractInternal {
     @Id
     private String id;
 
-    @NotEmpty
-    @NotNull
     private String number;
 
     @NotNull

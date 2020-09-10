@@ -14,8 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class NumeratorDALImpl implements NumeratorDAL {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
+
+    public NumeratorDALImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @Override
     public Numerator getNumeratorById(String id) {
