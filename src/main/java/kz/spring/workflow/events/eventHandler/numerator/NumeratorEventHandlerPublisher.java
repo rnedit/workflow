@@ -1,4 +1,4 @@
-package kz.spring.workflow.events.workflowEventHandler;
+package kz.spring.workflow.events.eventHandler.numerator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 https://www.baeldung.com/spring-events
  */
 @Component
-public class WorkflowEventHandlerPublisher {
+public class NumeratorEventHandlerPublisher {
     @Autowired
     ApplicationEventPublisher applicationEventPublisher;
 
@@ -23,8 +23,8 @@ public class WorkflowEventHandlerPublisher {
         Создать в базе таблицу обработчик событий и работать с событиями там
          */
 
-        WorkflowEventHandler workflowEventHandler =
-                new WorkflowEventHandler(this, eventName, userNameCreation, documentId, documentJobId);
-        applicationEventPublisher.publishEvent(workflowEventHandler);
+        NumeratorEventHandler numeratorEventHandler =
+                new NumeratorEventHandler(this, eventName, userNameCreation, documentId, documentJobId);
+        applicationEventPublisher.publishEvent(numeratorEventHandler);
     }
 }

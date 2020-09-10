@@ -90,7 +90,6 @@ public class InternalController {
     @PostMapping("/saveInternal")
     public ResponseEntity<?> saveInternal(@Valid @RequestBody InternalSaveRequest internalSaveRequest,
                                          BindingResult bindingResult) {
-        log.info(String.valueOf(internalSaveRequest));
         Map<String, String> error = new HashMap<>();
         if (bindingResult.hasErrors()) {
 

@@ -169,6 +169,7 @@ public class AuthController {
                                         HttpServletRequest request,
                                         HttpServletResponse response,
                                         BindingResult bindingResult) {
+
         Map<String,String> error = new HashMap<>();
         if (bindingResult.hasErrors()) {
             error.put("ERROR","jwt null");
@@ -176,9 +177,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
         String newJwt = null;
-
         if (refreshJwt.getRefreshJwt() != null) {
-
             User user = userRepository.getByRefreshJwt(refreshJwt.getRefreshJwt());
             if (user!=null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
@@ -245,6 +244,10 @@ public class AuthController {
                         user.getEditable()!=null?user.getEditable():true,
                         profile
                 ));
+            } else {
+                error.put("ERROR","User null id refreshJwt = " +refreshJwt.getRefreshJwt());
+                error.put("code","0");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
         }
         error.put("ERROR","jwt error");

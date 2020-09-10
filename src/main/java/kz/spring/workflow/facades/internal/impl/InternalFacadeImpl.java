@@ -2,7 +2,9 @@ package kz.spring.workflow.facades.internal.impl;
 
 import kz.spring.workflow.domain.Profile;
 import kz.spring.workflow.domain.User;
+import kz.spring.workflow.domain.eventqueue.EventQueue;
 import kz.spring.workflow.domain.internal.Internal;
+import kz.spring.workflow.events.eventHandler.EventQueueHandlerPublisher;
 import kz.spring.workflow.facades.internal.InternalFacade;
 import kz.spring.workflow.repository.Impl.InternalDALImpl;
 import kz.spring.workflow.repository.ProfileRepository;
@@ -28,6 +30,9 @@ public class InternalFacadeImpl implements InternalFacade {
 
     @Autowired
     InternalDALImpl internalDAL;
+
+    @Autowired
+    EventQueueHandlerPublisher eventQueueHandlerPublisher;
 
     @Value("${mongodb.rootIdAllReaders}")
     String allReadersRootUser;
@@ -94,6 +99,19 @@ public class InternalFacadeImpl implements InternalFacade {
         //права на доступ по ролям если роль не соответствует "ROLE_USER"
         internal.setAllReadersRoles(genAllReadersRoles);
 
-        return internalDAL.saveInternal(internal);
+        Internal newInternal = internalDAL.saveInternal(internal);
+
+        if (newInternal == null) {
+            throw new IllegalArgumentException("Internal newInternal cannot be null");
+        }
+
+        EventQueue eventQueue = new EventQueue();
+        eventQueue.setCreatorUserId(internalSaveRequest.getСreatorUserId());
+        eventQueue.setDocumentId(newInternal.getId());
+        eventQueue.setTaskName("saveInternal");
+
+        eventQueueHandlerPublisher.doEventHandler(eventQueue);
+
+        return newInternal;
     }
 }

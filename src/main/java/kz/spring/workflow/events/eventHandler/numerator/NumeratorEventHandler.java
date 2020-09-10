@@ -1,4 +1,4 @@
-package kz.spring.workflow.events.workflowEventHandler;
+package kz.spring.workflow.events.eventHandler.numerator;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationEvent;
 
 @Getter
 @Setter
-public class WorkflowEventHandler extends ApplicationEvent {
+public class NumeratorEventHandler extends ApplicationEvent {
     private Boolean state = false;
     private String eventName;
     private String userNameCreation;
@@ -14,7 +14,7 @@ public class WorkflowEventHandler extends ApplicationEvent {
     private String documentId;
     private String statusExec = "";
 
-    public WorkflowEventHandler (Object source,
+    public NumeratorEventHandler(Object source,
                                  String eventName,
                                  String userNameCreation,
                                  String documentId,
