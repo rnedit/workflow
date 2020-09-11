@@ -1,6 +1,7 @@
 package kz.spring.workflow.request.internal;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -11,17 +12,17 @@ public class InternalSaveRequest {
 
     @NotEmpty
     @NotNull
-    private String Subject;
+    private String subject;
 
     @NotEmpty
     @NotNull
-    private String Recipient;
+    private String recipient;
 
     @NotNull
-    private Integer TypeAgreement;
+    private Integer typeAgreement;
 
     @NotNull
-    private Boolean Draft = false;
+    private Boolean draft = false;
 
     @NotEmpty
     @NotNull
@@ -35,4 +36,6 @@ public class InternalSaveRequest {
     @NotNull
     private String сreatorUserId;
 
+    private String[] attachmentIds;
+    
 }

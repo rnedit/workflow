@@ -7,13 +7,17 @@ import kz.spring.workflow.domain.internal.types.InternalType;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.persistence.Index;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
 @Document(collection = "internal")
 public class Internal extends AbstractInternal {
+
 
     @NotNull
     private String subject;
@@ -39,6 +43,8 @@ public class Internal extends AbstractInternal {
 
     @DBRef
     private Set<InternalPerformed> internalPerformeds = new HashSet<>();
+
+    private List<String> attachments;
 
     public static Internal setNewInternal(Internal internal) {
         Internal internalData = new Internal();

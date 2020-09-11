@@ -1,8 +1,8 @@
 package kz.spring.workflow.service;
 
+import kz.spring.workflow.service.DAL.EmailService;
 import kz.spring.workflow.service.util.EmailFields;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailException;
@@ -26,7 +26,7 @@ import java.util.Map;
 //https://www.baeldung.com/spring-email
 
 @Service
-public class EmailServiceImpl implements EmailService{
+public class EmailServiceImpl implements EmailService {
 
     @Value("${emailFrom}")
     String emailFrom;

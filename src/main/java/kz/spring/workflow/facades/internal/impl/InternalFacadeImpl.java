@@ -15,10 +15,7 @@ import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static kz.spring.workflow.tasks.types.InternalTaskType.*;
 
@@ -59,6 +56,7 @@ public class InternalFacadeImpl implements InternalFacade {
         internal.setTypeAgreement(Integer.valueOf(internalSaveRequest.getTypeAgreement()));
         internal.setDraft(Boolean.valueOf(internalSaveRequest.getDraft()));
         internal.setProfileRecipient(profileRepository.getById(internalSaveRequest.getRecipient()));
+        internal.setAttachments(Arrays.asList(internalSaveRequest.getAttachmentIds()));
 
         List<String> genAllReaders = new ArrayList<>();
         genAllReaders.add(internal.getProfileRecipient().getId());

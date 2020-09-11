@@ -1,4 +1,4 @@
-package kz.spring.workflow.service;
+package kz.spring.workflow.service.DAL;
 
 import kz.spring.workflow.service.util.EmailFields;
 
