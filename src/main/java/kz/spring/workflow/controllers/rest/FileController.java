@@ -3,9 +3,11 @@ package kz.spring.workflow.controllers.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import kz.spring.workflow.request.files.FileGetRequest;
 import kz.spring.workflow.request.files.InfoFile;
 import kz.spring.workflow.service.AttachmentServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +30,14 @@ public class FileController {
     final
     private AttachmentServiceImpl attachmentService;
 
+    @Autowired
     public FileController(AttachmentServiceImpl attachmentService) {
         this.attachmentService = attachmentService;
+    }
+
+    @PostMapping(value = "/get", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public @ResponseBody byte[] get(FileGetRequest fileGetRequest) throws IOException {
+        return IOUtils.toByteArray(attachmentService.getAttachment(fileGetRequest.getId()).getStream());
     }
 
     @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

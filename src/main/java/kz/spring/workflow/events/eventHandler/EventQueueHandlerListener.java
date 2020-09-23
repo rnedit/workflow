@@ -2,14 +2,16 @@ package kz.spring.workflow.events.eventHandler;
 
 import kz.spring.workflow.domain.eventqueue.EventQueue;
 import kz.spring.workflow.repository.EventQueueRepository;
-import kz.spring.workflow.tasks.internal.impl.SaveInternalDAOImpl;
-import kz.spring.workflow.tasks.internal.impl.SendEmailInternalDAOImpl;
+import kz.spring.workflow.components.tasks.internal.impl.SaveInternalDAOImpl;
+import kz.spring.workflow.components.tasks.internal.impl.SendEmailInternalDAOImpl;
+import kz.spring.workflow.components.tasks.internal.impl.UpdateInternalDAOImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.ObjectNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
-import static kz.spring.workflow.tasks.types.InternalTaskType.*;
+import static kz.spring.workflow.components.tasks.types.InternalTaskType.*;
 
 /*
 https://www.baeldung.com/spring-events
@@ -25,12 +27,17 @@ public class EventQueueHandlerListener implements ApplicationListener<EventQueue
 
    private final SendEmailInternalDAOImpl sendEmailInternalDAO;
 
+    private final UpdateInternalDAOImpl updateInternalDAO;
+
+    @Autowired
     public EventQueueHandlerListener(EventQueueRepository eventQueueRepository,
                                      SaveInternalDAOImpl saveInternalDAO,
-                                     SendEmailInternalDAOImpl sendEmailInternalDAO) {
+                                     SendEmailInternalDAOImpl sendEmailInternalDAO,
+                                     UpdateInternalDAOImpl updateInternalDAO) {
         this.eventQueueRepository = eventQueueRepository;
         this.saveInternalDAO = saveInternalDAO;
         this.sendEmailInternalDAO = sendEmailInternalDAO;
+        this.updateInternalDAO = updateInternalDAO;
     }
 
     @Override
@@ -51,6 +58,7 @@ public class EventQueueHandlerListener implements ApplicationListener<EventQueue
         Boolean result = switch(eventQ.getTaskName()) {
             case TASK_SAVEINTERNAL -> saveInternalDAO.Execute(eventQ);
             case TASK_SENDEMAILINTERNAL -> sendEmailInternalDAO.Execute(eventQ);
+            case TASK_UPDATEINTERNAL -> updateInternalDAO.Execute(eventQ);
             default -> throw new IllegalArgumentException("EventQueueHandlerListener eventQ.getTaskName()="+eventQ.getTaskName()+" Seriously?!");
         };
 

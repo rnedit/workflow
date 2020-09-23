@@ -1,4 +1,4 @@
-package kz.spring.workflow.tasks.internal.impl;
+package kz.spring.workflow.components.tasks.internal.impl;
 
 import kz.spring.workflow.domain.Profile;
 import kz.spring.workflow.domain.configuration.Numerator;
@@ -7,10 +7,11 @@ import kz.spring.workflow.domain.internal.Internal;
 import kz.spring.workflow.events.eventHandler.EventQueueHandlerPublisher;
 import kz.spring.workflow.repository.Impl.InternalDALImpl;
 import kz.spring.workflow.repository.Impl.NumeratorDALImpl;
-import kz.spring.workflow.tasks.internal.SaveInternalDAO;
+import kz.spring.workflow.components.tasks.internal.SaveInternalDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static kz.spring.workflow.tasks.types.InternalTaskType.TASK_SENDEMAILINTERNAL;
+import static kz.spring.workflow.components.tasks.types.InternalTaskType.TASK_SENDEMAILINTERNAL;
 
 @Service
 public class SaveInternalDAOImpl implements SaveInternalDAO {
@@ -27,6 +28,7 @@ public class SaveInternalDAOImpl implements SaveInternalDAO {
     final
     private EventQueueHandlerPublisher eventQueueHandlerPublisher;
 
+    @Autowired
     public SaveInternalDAOImpl(NumeratorDALImpl numeratorDAL, InternalDALImpl internalDAL,
                                SendEmailInternalDAOImpl sendEmailInternalDAO,
                                EventQueueHandlerPublisher eventQueueHandlerPublisher) {
@@ -43,9 +45,9 @@ public class SaveInternalDAOImpl implements SaveInternalDAO {
         }
         Internal internal = internalDAL.getInternal(eventQueue.getDocumentId());
         internal.setNumber(this.generateNumber(internal));
-        Internal updateInternal = internalDAL.saveInternal(internal);
-        if (updateInternal == null) {
-            throw new IllegalArgumentException("Internal updateInternal cannot be null");
+        Internal newInternal = internalDAL.saveInternal(internal);
+        if (newInternal == null) {
+            throw new IllegalArgumentException("Internal cannot be saved");
         }
         return true;
     }
@@ -81,7 +83,7 @@ public class SaveInternalDAOImpl implements SaveInternalDAO {
             throw new IllegalArgumentException("Internal internal cannot be null");
         }
 
-        Profile creationProfile = internal.getСreatorProfile();
+        Profile creationProfile = internal.getCreatorProfile();
         if (creationProfile == null) {
             creationProfile = new Profile("Без профайла");
             creationProfile.setSuffix("");

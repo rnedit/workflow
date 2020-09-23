@@ -1,0 +1,4 @@
+type Access {
+    name:String!
+    info:String
+}

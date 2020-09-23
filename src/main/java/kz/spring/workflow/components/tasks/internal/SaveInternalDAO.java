@@ -1,4 +1,4 @@
-package kz.spring.workflow.tasks.internal;
+package kz.spring.workflow.components.tasks.internal;
 
 import kz.spring.workflow.domain.eventqueue.EventQueue;
 

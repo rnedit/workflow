@@ -6,6 +6,7 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 import kz.spring.workflow.service.DAL.AttachmentService;
 import kz.spring.workflow.service.util.Attachment;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
@@ -22,6 +23,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     private final GridFsOperations operations;
 
+    @Autowired
     public AttachmentServiceImpl(GridFsTemplate gridFsTemplate, GridFsOperations operations) {
         this.gridFsTemplate = gridFsTemplate;
         this.operations = operations;

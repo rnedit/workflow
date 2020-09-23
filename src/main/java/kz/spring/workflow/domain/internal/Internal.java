@@ -4,12 +4,13 @@ package kz.spring.workflow.domain.internal;
 import kz.spring.workflow.domain.Profile;
 import kz.spring.workflow.domain.internal.attribute.AbstractInternal;
 import kz.spring.workflow.domain.internal.types.InternalType;
+import kz.spring.workflow.repository.ProfileRepository;
+import kz.spring.workflow.request.internal.InternalSaveRequest;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import javax.persistence.Index;
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +18,6 @@ import java.util.Set;
 @Data
 @Document(collection = "internal")
 public class Internal extends AbstractInternal {
-
 
     @NotNull
     private String subject;
@@ -46,7 +46,9 @@ public class Internal extends AbstractInternal {
 
     private List<String> attachments;
 
-    public static Internal setNewInternal(Internal internal) {
+    private List<String> attachmentNames;
+
+    public static Internal setNewInternalFromCurrent(Internal internal) {
         Internal internalData = new Internal();
         internalData.setId(internal.getId());
         internalData.setCreationDate(internal.getCreationDate());
@@ -61,22 +63,9 @@ public class Internal extends AbstractInternal {
         internalData.setProfilesAllReaders(internal.getProfilesAllReaders());
         internalData.setInternalAssignments(internal.getInternalAssignments());
         internalData.setInternalPerformeds(internal.getInternalPerformeds());
+        internalData.setAttachments(internal.getAttachments());
+        internalData.setAttachmentNames(internal.getAttachmentNames());
         return internal;
     }
 
-    public void setInternal(Internal internal) {
-        this.setId(internal.getId());
-        this.setCreationDate(internal.getCreationDate());
-        this.setSubject(internal.getSubject());
-        this.setNumber(internal.getNumber());
-        this.setTypeAgreement(internal.getTypeAgreement());
-        this.setDraft(internal.getDraft());
-        this.setRecipient(internal.getRecipient());
-        this.setAllReaders(internal.getAllReaders());
-        this.setAllReadersRoles(internal.getAllReadersRoles());
-        this.setProfileRecipient(internal.getProfileRecipient());
-        this.setProfilesAllReaders(internal.getProfilesAllReaders());
-        this.setInternalAssignments(internal.getInternalAssignments());
-        this.setInternalPerformeds(internal.getInternalPerformeds());
-    }
 }

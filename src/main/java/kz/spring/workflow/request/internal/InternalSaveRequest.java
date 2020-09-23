@@ -10,6 +10,10 @@ import java.util.List;
 @Data
 public class InternalSaveRequest {
 
+    private String id;
+
+    private Integer version;
+
     @NotEmpty
     @NotNull
     private String subject;
@@ -30,12 +34,18 @@ public class InternalSaveRequest {
 
     @NotEmpty
     @NotNull
-    private List<String> сreatorRolesId;
+    private String сreatorUserId;
+
+    private String updateUserId;
+
+    private String updateProfileId;
 
     @NotEmpty
     @NotNull
-    private String сreatorUserId;
+    private List<String> сreatorRolesId;
+
 
     private String[] attachmentIds;
-    
+
+    private String[] attachmentNames;
 }

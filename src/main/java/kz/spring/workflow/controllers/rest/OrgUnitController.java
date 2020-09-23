@@ -31,7 +31,7 @@ public class OrgUnitController {
     private OrgUnitRepository orgUnitRepository;
     final
     private ProfileRepository profileRepository;
-
+    @Autowired
     public OrgUnitController(OrgUnitRepository orgUnitRepository, ProfileRepository profileRepository) {
         this.orgUnitRepository = orgUnitRepository;
         this.profileRepository = profileRepository;

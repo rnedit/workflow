@@ -4,11 +4,15 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import kz.spring.workflow.repository.UserRepository;
 import kz.spring.workflow.security.services.UserDetailsImpl;
+import kz.spring.workflow.security.services.UserDetailsServiceImpl;
+import kz.spring.workflow.service.DAL.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
@@ -30,8 +34,7 @@ public class JwtUtils {
     private int jwtExpirationMs;
 
     @Autowired
-    UserRepository userRepository;
-
+    private UserDetailsServiceImpl userDetailsService;
 
     private final Key key1 = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
@@ -46,6 +49,11 @@ public class JwtUtils {
                 .compact();
 
         return jws;
+    }
+
+    public Authentication getAuthentication (String token) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getUserNameFromJwtToken(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "",userDetails.getAuthorities());
     }
 
     public static String createRefreshToken() {

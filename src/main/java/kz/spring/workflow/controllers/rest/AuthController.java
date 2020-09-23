@@ -12,6 +12,7 @@ import kz.spring.workflow.response.MessageResponse;
 import kz.spring.workflow.security.jwt.AuthTokenFilter;
 import kz.spring.workflow.security.jwt.JwtUtils;
 import kz.spring.workflow.security.services.UserDetailsServiceImpl;
+import kz.spring.workflow.service.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +45,7 @@ public class AuthController {
     final
     private AuthenticationManager authenticationManager;
 
-    final
-    private UserRepository userRepository;
+    final private UserServiceImpl userService;
 
     final
     private ProfileRepository profileRepository;
@@ -70,9 +70,10 @@ public class AuthController {
     @Value("${refreshJwt.maxAge}")
     private int refreshJwtmaxAge;
 
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, ProfileRepository profileRepository, RoleRepository roleRepository, UserDetailsServiceImpl userDetailsService, PasswordEncoder encoder, JwtUtils jwtUtils, ApiUtils apiUtils) {
+    @Autowired
+    public AuthController(AuthenticationManager authenticationManager, UserServiceImpl userService, ProfileRepository profileRepository, RoleRepository roleRepository, UserDetailsServiceImpl userDetailsService, PasswordEncoder encoder, JwtUtils jwtUtils, ApiUtils apiUtils) {
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.profileRepository = profileRepository;
         this.roleRepository = roleRepository;
         this.userDetailsService = userDetailsService;
@@ -98,11 +99,11 @@ public class AuthController {
         Boolean loggedIn = false;
         if (jwt!=null) loggedIn = true;
 
-       User user = userRepository.getByUsername(loginRequest.getUsername());
+       User user = userService.getByUsername(loginRequest.getUsername());
        final String jwtUserRefresh = jwtUtils.createRefreshToken();
 
         user.setRefreshJwt(jwtUserRefresh);
-        userRepository.save(user);
+        userService.save(user);
 
         Profile profile = profileRepository.getById(user.getParentIdProfile());
 
@@ -161,6 +162,7 @@ public class AuthController {
                 user.getName(),
                 loggedIn,
                 jwtUserRefresh,
+                jwt,
                 user.getRefreshJwtMaxAge(),
                 cal.getTime(),
                 roles,
@@ -187,7 +189,7 @@ public class AuthController {
         }
         String newJwt = null;
         if (refreshJwt.getRefreshJwt() != null) {
-            User user = userRepository.getByRefreshJwt(refreshJwt.getRefreshJwt());
+            User user = userService.getByRefreshJwt(refreshJwt.getRefreshJwt());
             if (user!=null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, "",
@@ -198,7 +200,7 @@ public class AuthController {
 
                 final String jwtUserRefresh = jwtUtils.createRefreshToken();
                 user.setRefreshJwt(jwtUserRefresh);
-                userRepository.save(user);
+                userService.save(user);
 
                 Profile profile = profileRepository.getById(user.getParentIdProfile());
 
@@ -221,7 +223,7 @@ public class AuthController {
                 if (newJwt!=null) loggedIn = true;
                 Cookie cookie = new Cookie("jwtID", newJwt);
                 cookie.setPath("/");
-                cookie.setSecure(true);
+                cookie.setSecure(false);
                 cookie.setHttpOnly(true);
                 cookie.setMaxAge(cookieMaxAgeS);
                 response.addCookie(cookie);
@@ -245,6 +247,7 @@ public class AuthController {
                         user.getName(),
                         loggedIn,
                         jwtUserRefresh,
+                        newJwt,
                         user.getRefreshJwtMaxAge(),
                         cal.getTime(),
                         roles,
@@ -281,7 +284,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
 
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+        if (userService.existsByUsername(signUpRequest.getUsername())) {
             error.put("ERROR","User Name Exist");
             error.put("code","0");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -289,7 +292,7 @@ public class AuthController {
                   //  .body(new MessageResponse("Error: Username is already User Name!"));
         }
 
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (userService.existsByEmail(signUpRequest.getEmail())) {
             error.put("ERROR","Email Exist");
             error.put("code","1");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -310,7 +313,7 @@ public class AuthController {
 
 
         user.setRoles(apiUtils.calcRoles(signUpRequest.getRoles()));
-        userRepository.save(user);
+        userService.save(user);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 

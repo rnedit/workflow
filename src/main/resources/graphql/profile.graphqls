@@ -1,0 +1,15 @@
+type Profile {
+    name:String!
+    parentName:String
+    access: [Access]
+    user: User!
+}
+
+# Root
+extend type Query {
+    getProfile(id:String!):Profile
+}
+
+schema {
+    query: Query,
+}

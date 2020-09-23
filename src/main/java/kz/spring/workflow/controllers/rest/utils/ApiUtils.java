@@ -4,6 +4,7 @@ import kz.spring.workflow.domain.ERole;
 import kz.spring.workflow.domain.Role;
 import kz.spring.workflow.repository.RoleRepository;
 import kz.spring.workflow.repository.UserRepository;
+import kz.spring.workflow.service.DAL.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +15,13 @@ import static kz.spring.workflow.domain.ERole.*;
 
 @Service
 public class ApiUtils {
-    @Autowired
-    UserRepository userRepository;
 
-    @Autowired
+    final
     RoleRepository roleRepository;
+
+    public ApiUtils(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     public Set<Role> calcRoles(Set<Role> strRoles) {
         Set<Role> roles = new HashSet<>();

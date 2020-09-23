@@ -17,6 +17,7 @@ public class JwtResponse {
     Boolean loggedIn;
     String lastName;
     String refreshJwt;
+    String jwtID;
     Integer refreshJwtMaxAge;
     Boolean editable;
 
@@ -37,6 +38,7 @@ public class JwtResponse {
                         String name,
                         Boolean loggedIn,
                         String refreshJwt,
+                         String jwtID,
                         Integer refreshJwtMaxAge,
                         Date updatedJwt,
                         List<ERole> roles,
@@ -52,6 +54,7 @@ public class JwtResponse {
         this.name = name;
         this.loggedIn = loggedIn;
         this.refreshJwt = refreshJwt;
+        this.jwtID = jwtID;
         this.refreshJwtMaxAge = refreshJwtMaxAge;
         this.updatedJwt = updatedJwt;
         this.roles = roles;

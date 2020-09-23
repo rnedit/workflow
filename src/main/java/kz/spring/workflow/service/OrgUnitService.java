@@ -14,6 +14,7 @@ public class OrgUnitService {
 
     private final ProfileRepository profileRepository;
 
+    @Autowired
     public OrgUnitService(ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
     }

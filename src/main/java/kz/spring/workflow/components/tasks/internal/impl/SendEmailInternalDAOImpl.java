@@ -1,4 +1,4 @@
-package kz.spring.workflow.tasks.internal.impl;
+package kz.spring.workflow.components.tasks.internal.impl;
 
 import kz.spring.workflow.domain.Profile;
 import kz.spring.workflow.domain.eventqueue.EventQueue;
@@ -6,7 +6,8 @@ import kz.spring.workflow.domain.internal.Internal;
 import kz.spring.workflow.repository.Impl.InternalDALImpl;
 import kz.spring.workflow.service.EmailServiceImpl;
 import kz.spring.workflow.service.util.EmailFields;
-import kz.spring.workflow.tasks.internal.SendEmailInternalDAO;
+import kz.spring.workflow.components.tasks.internal.SendEmailInternalDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -20,6 +21,7 @@ public class SendEmailInternalDAOImpl implements SendEmailInternalDAO {
     final
     private InternalDALImpl internalDAL;
 
+    @Autowired
     public SendEmailInternalDAOImpl(EmailServiceImpl emailService, InternalDALImpl internalDAL) {
         this.emailService = emailService;
         this.internalDAL = internalDAL;

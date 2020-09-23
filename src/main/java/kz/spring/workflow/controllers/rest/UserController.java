@@ -4,9 +4,9 @@ import kz.spring.workflow.controllers.rest.utils.ApiUtils;
 import kz.spring.workflow.domain.Profile;
 import kz.spring.workflow.domain.User;
 import kz.spring.workflow.repository.ProfileRepository;
-import kz.spring.workflow.repository.UserRepository;
 import kz.spring.workflow.request.SignupRequest;
 import kz.spring.workflow.request.UsersRequest;
+import kz.spring.workflow.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,30 +25,29 @@ import java.util.*;
 @RequestMapping("/api/users")
 public class UserController {
 
-    final
-    private UserRepository userRepository;
+    final private UserServiceImpl userService;
 
     final
     private ProfileRepository profileRepository;
 
     final
     private ApiUtils apiUtils;
-
-    public UserController(UserRepository userRepository, ProfileRepository profileRepository, ApiUtils apiUtils) {
-        this.userRepository = userRepository;
+    @Autowired
+    public UserController(UserServiceImpl userService, ProfileRepository profileRepository, ApiUtils apiUtils) {
+        this.userService = userService;
         this.profileRepository = profileRepository;
         this.apiUtils = apiUtils;
     }
 
     @PostMapping("/parentidisnull")
     public ResponseEntity<?> getUsersByParentIdIsNull() {
-        Set<User> users = userRepository.getUsersByParentIdProfileIsNull();
+        Set<User> users = userService.getUsersByParentIdProfileIsNull();
         return ResponseEntity.ok(users);
     }
 
     @PostMapping("/getaccessprofile/{id}")
     public ResponseEntity<?> getAccessProfile(@PathVariable String id) {
-        User user = userRepository.getById(id);
+        User user = userService.getById(id);
         Map<String, String> error = new HashMap<>();
 
         if (user != null) {
@@ -58,6 +57,7 @@ public class UserController {
                 data.put("accessprofile", null);
                 return ResponseEntity.ok(data);
             }
+
             Profile profile = profileRepository.getById(user.getParentIdProfile());
             if (profile != null) {
                 Map<String, Object> data = new HashMap<>();
@@ -82,13 +82,13 @@ public class UserController {
         Pageable sortedByName = PageRequest.of(usersRequest.getPage() - 1, usersRequest.getPerpage());
 
         Map<String, Object> data = new HashMap<>();
-        Page<User> users = userRepository.findAll(sortedByName);
+        Page<User> users = userService.findAll(sortedByName);
 
         Collection<User> collection = users.getContent();
         data.put("users", collection);
         data.put("perpage", usersRequest.getPerpage());
         data.put("page", usersRequest.getPage());
-        data.put("total", userRepository.count());
+        data.put("total", userService.count());
         return ResponseEntity.ok(data);
     }
 
@@ -102,17 +102,17 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
 
-        User user = userRepository.getById(id);
-        User userUpdate = userRepository.getByUsername(signUpRequest.getUsername());
+        User user = userService.getById(id);
+        User userUpdate = userService.getByUsername(signUpRequest.getUsername());
 
         if (!user.getId().equals(userUpdate.getId()))
-            if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+            if (userService.existsByUsername(signUpRequest.getUsername())) {
                 error.put("ERROR", "User Name Exist");
                 error.put("code", "0");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
         if (!user.getId().equals(userUpdate.getId()))
-            if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+            if (userService.existsByEmail(signUpRequest.getEmail())) {
                 error.put("ERROR", "Email Exist");
                 error.put("code", "1");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -124,14 +124,14 @@ public class UserController {
         user.setUsername(signUpRequest.getUsername());
 
         user.setRoles(apiUtils.calcRoles(signUpRequest.getRoles()));
-        userRepository.save(user);
+        userService.save(user);
         return ResponseEntity.ok(user);
     }
 
     @PostMapping("/delete/{id}")
     ResponseEntity<?> deleteUser(@PathVariable String id) {
-        User user = userRepository.getById(id);
-        userRepository.delete(user);
+        User user = userService.getById(id);
+        userService.delete(user);
         Map<String, String> inf = new HashMap<>();
         inf.put("SUCCESS", "User Deleted");
         inf.put("code", "0");

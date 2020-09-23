@@ -4,10 +4,10 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Data
 public class InternalTableRequest {
-
 
     @NotEmpty
     @NotNull
@@ -18,5 +18,9 @@ public class InternalTableRequest {
 
     @NotNull
     Integer perPage = 15;
+
+    @NotNull
+    Integer countExec;
+
 
 }

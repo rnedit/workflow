@@ -2,7 +2,7 @@ package kz.spring.workflow.domain.internal.attribute;
 
 import kz.spring.workflow.domain.Profile;
 import kz.spring.workflow.domain.User;
-import kz.spring.workflow.domain.internal.Internal;
+
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -16,6 +16,9 @@ import java.util.Set;
 
 @Data
 public abstract class AbstractInternal {
+
+    private Integer version = 1;
+
     @Id
     private String id;
 
@@ -29,11 +32,30 @@ public abstract class AbstractInternal {
 
     private List<String> allReadersRoles; //ids
 
-    @DBRef
-    private Profile сreatorProfile;
+    @NotEmpty
+    @NotNull
+    private String сreatorProfileId;
 
     @DBRef
-    private User сreatorUser;
+    private Profile creatorProfile;
+
+    @NotEmpty
+    @NotNull
+    private String сreatorUserId;
+
+    @DBRef
+    private User creatorUser;
+
+    @DBRef
+    private Profile updateProfile;
+
+    private String updateProfileId;
+
+    @DBRef
+    private Profile updateUser;
+
+    private String updateUserId;
+
 
     @NotNull
     @DBRef

@@ -20,6 +20,7 @@ public class EventQueueHandlerPublisher {
     final
     private ApplicationEventPublisher applicationEventPublisher;
 
+    @Autowired
     public EventQueueHandlerPublisher(EventQueueRepository eventQueueRepository, ApplicationEventPublisher applicationEventPublisher) {
         this.eventQueueRepository = eventQueueRepository;
         this.applicationEventPublisher = applicationEventPublisher;

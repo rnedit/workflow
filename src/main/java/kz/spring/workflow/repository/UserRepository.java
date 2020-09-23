@@ -2,8 +2,6 @@ package kz.spring.workflow.repository;
 
 import kz.spring.workflow.domain.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-
 import java.util.Optional;
 import java.util.Set;
 

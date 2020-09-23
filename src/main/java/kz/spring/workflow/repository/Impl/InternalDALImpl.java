@@ -2,10 +2,13 @@ package kz.spring.workflow.repository.Impl;
 
 import kz.spring.workflow.domain.internal.Internal;
 import kz.spring.workflow.repository.DAL.InternalDAL;
+import kz.spring.workflow.request.internal.InternalSaveRequest;
+import kz.spring.workflow.service.InternalService;
 import org.bson.types.ObjectId;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.MongoTransactionException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -21,6 +24,7 @@ public class InternalDALImpl implements InternalDAL {
 
     private final MongoTemplate mongoTemplate;
 
+    @Autowired
     public InternalDALImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
@@ -30,24 +34,56 @@ public class InternalDALImpl implements InternalDAL {
         return mongoTemplate.findAll(Internal.class);
     }
 
-    @Transactional
     @Override
-    public Internal saveInternal(Internal internal) {
-        if (internal == null) {
-            throw new IllegalArgumentException("Internal internal cannot be null");
+    public Boolean isCurrentVersion(Internal internal, Integer version) {
+        if (version==null)
+            return true;
+        Internal curInternal = getInternal(internal.getId());
+        if (curInternal.getVersion()==null) {
+            return true;
         }
-        mongoTemplate.save(internal);
-        return internal;
+        if (curInternal.getVersion()==version)
+            return true;
+
+        return false;
     }
 
     @Override
-    public List<Internal> saveAllInternal(List<Internal> internal) {
+    public Boolean saveInternalisCurrentVersion(Internal internal, InternalSaveRequest internalSaveRequest ) {
         if (internal == null) {
             throw new IllegalArgumentException("Internal internal cannot be null");
         }
-        mongoTemplate.save(internal, mongoTemplate.getCollectionName(List.class));
-        return internal;
+        if (isCurrentVersion(internal, internalSaveRequest.getVersion())) {
+            internal.setVersion(internal.getVersion()+1);
+            mongoTemplate.save(internal);
+            return true;
+        }
+        return false;
     }
+
+    @Override
+    public Internal saveInternal(Internal internal ) {
+        if (internal == null) {
+            throw new IllegalArgumentException("Internal internal cannot be null");
+        }
+            mongoTemplate.save(internal);
+            return internal;
+    }
+//Не поддерживается мульти сохранение
+//    @Transactional
+//    @Override
+//    public List<Internal> saveAllInternal(List<Internal> internals) {
+//        if (internals == null) {
+//            throw new IllegalArgumentException("Internals internal cannot be null");
+//        }
+//        try {
+//            mongoTemplate.save(internals, mongoTemplate.getCollectionName(List.class));
+//        } catch (MongoTransactionException mte) {
+//
+//        }
+//
+//        return internals;
+//    }
 
     @Override
     public Internal getInternal(String id) {
@@ -58,7 +94,8 @@ public class InternalDALImpl implements InternalDAL {
 
         Query query = new Query();
         query.addCriteria(Criteria
-                .where("id").is(new ObjectId(id))
+//                .where("id").is(new ObjectId(id))
+                        .where("_id").is(id)
         );
 
         final Internal internal = mongoTemplate.findOne(query, Internal.class);
@@ -67,7 +104,7 @@ public class InternalDALImpl implements InternalDAL {
             throw new ObjectNotFoundException("Internal Id " + id + " not found!", Internal.class.getName());
         }
 
-        final Internal internalData = Internal.setNewInternal(internal);
+        final Internal internalData = Internal.setNewInternalFromCurrent(internal);
 
         return internalData;
     }
@@ -136,7 +173,7 @@ public class InternalDALImpl implements InternalDAL {
 
         if (internalsPage != null && !internalsPage.isEmpty()) {
             internalsPage.forEach(i -> {
-                final Internal internalData = Internal.setNewInternal(i);
+                final Internal internalData = Internal.setNewInternalFromCurrent(i);
                 internalsFacadeData.add(internalData);
             });
         }

@@ -3,10 +3,12 @@ package kz.spring.workflow.repository.Impl;
 import kz.spring.workflow.domain.User;
 import kz.spring.workflow.repository.DAL.UserDAL;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.MongoTransactionException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,9 +29,14 @@ public class UserDALImpl implements UserDAL {
         return mongoTemplate.findOne(query, User.class);
     }
 
+    @Transactional
     @Override
     public User addNewUser(User user) {
+        try {
         mongoTemplate.save(user);
+        } catch (MongoTransactionException mte) {
+
+        }
         // Now, user object will contain the ID as well
         return user;
     }

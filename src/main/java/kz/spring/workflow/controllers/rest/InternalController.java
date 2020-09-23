@@ -8,6 +8,7 @@ import kz.spring.workflow.repository.UserRepository;
 import kz.spring.workflow.request.internal.InternalRequest;
 import kz.spring.workflow.request.internal.InternalSaveRequest;
 import kz.spring.workflow.request.internal.InternalTableRequest;
+import kz.spring.workflow.service.DAL.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,24 +31,25 @@ public class InternalController {
 
     private final InternalFacadeImpl internalFacade;
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public InternalController(InternalDALImpl internalDAL, InternalFacadeImpl internalFacade, UserRepository userRepository) {
+    public InternalController(InternalDALImpl internalDAL,
+                              InternalFacadeImpl internalFacade, UserService userService) {
         this.internalDAL = internalDAL;
         this.internalFacade = internalFacade;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @PostMapping("/getInternals")
     public ResponseEntity<?> getInternals(@Valid @RequestBody InternalTableRequest internalRequest,
-                                       BindingResult bindingResult) {
+                                          BindingResult bindingResult) {
         Map<String, String> error = new HashMap<>();
         if (bindingResult.hasErrors()) {
             error.put("ERROR", "InternalRequest null");
             error.put("code", "2");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
-        User user = userRepository.getById(internalRequest.getUserId());
+        User user = userService.getById(internalRequest.getUserId());
         Pageable pageble = PageRequest.of(internalRequest.getPage() - 1, internalRequest.getPerPage());
         Map<String, Object> data = new HashMap<>();
         if (user.getRoles().contains(ERole.ROLE_USER)) {
@@ -91,7 +93,7 @@ public class InternalController {
 
     @PostMapping("/saveInternal")
     public ResponseEntity<?> saveInternal(@Valid @RequestBody InternalSaveRequest internalSaveRequest,
-                                         BindingResult bindingResult) {
+                                          BindingResult bindingResult) {
         Map<String, String> error = new HashMap<>();
         if (bindingResult.hasErrors()) {
 
@@ -99,10 +101,26 @@ public class InternalController {
             error.put("code", "2");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
-
         internalFacade.saveInternal(internalSaveRequest);
-
         return ResponseEntity.ok("ok");
+    }
 
+    @PostMapping("/updateInternal")
+    public ResponseEntity<?> updateInternal(@Valid @RequestBody InternalSaveRequest internalSaveRequest,
+                                          BindingResult bindingResult) {
+        Map<String, String> error = new HashMap<>();
+        if (bindingResult.hasErrors()) {
+
+            error.put("ERROR", "InternalSaveRequest id isEmpty or null");
+            error.put("code", "2");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+        Boolean result = internalFacade.updateInternal(internalSaveRequest);
+        if (!result) {
+            error.put("ERROR", "UpdateInternal false");
+            error.put("code", "5");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+        }
+        return ResponseEntity.ok("ok");
     }
 }

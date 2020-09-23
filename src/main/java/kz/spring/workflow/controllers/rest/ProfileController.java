@@ -7,6 +7,7 @@ import kz.spring.workflow.repository.ProfileRepository;
 import kz.spring.workflow.repository.UserRepository;
 import kz.spring.workflow.request.ProfileRequest;
 import kz.spring.workflow.request.UsersRequest;
+import kz.spring.workflow.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +25,9 @@ import java.util.*;
 @PreAuthorize("hasAnyRole('USER','ADMIN','MODERATOR')")
 @RequestMapping("/api/profiles")
 public class ProfileController {
-    final
-    private UserRepository userRepository;
+
+    final private UserServiceImpl userService;
+
     final
     private ProfileRepository profileRepository;
     final
@@ -34,8 +36,9 @@ public class ProfileController {
     final
     private OrgUnitRepository orgUnitRepository;
 
-    public ProfileController(UserRepository userRepository, ProfileRepository profileRepository, AccessRepository accessRepository, OrgUnitRepository orgUnitRepository) {
-        this.userRepository = userRepository;
+    @Autowired
+    public ProfileController(UserServiceImpl userService, ProfileRepository profileRepository, AccessRepository accessRepository, OrgUnitRepository orgUnitRepository) {
+        this.userService = userService;
         this.profileRepository = profileRepository;
         this.accessRepository = accessRepository;
         this.orgUnitRepository = orgUnitRepository;
@@ -76,7 +79,7 @@ public class ProfileController {
                 profileRequest.getName()
 
         );
-        User user = userRepository.getByUsername(profileRequest.getUser().getUsername());
+        User user = userService.getByUsername(profileRequest.getUser().getUsername());
         //OrgUnit orgUnit = orgUnitRepository.getById(profileRequest.getParentId());
         //if (orgUnit != null) {
         //    profile.setParentId(orgUnit.getId());
@@ -96,7 +99,7 @@ public class ProfileController {
         profile.setAccess(access);
         profileRepository.save(profile);
         user.setParentIdProfile(profile.getId());
-        userRepository.save(user);
+        userService.save(user);
         return ResponseEntity.ok(profile);
     }
 
@@ -113,8 +116,8 @@ public class ProfileController {
 
         Profile profile = profileRepository.getById(id);
         profile.setName(profileRequest.getName());
-        User user = userRepository.getByUsername(profileRequest.getUser().getUsername());
-        User oldUser = userRepository.getById(profileRequest.getOldUserId());
+        User user = userService.getByUsername(profileRequest.getUser().getUsername());
+        User oldUser = userService.getById(profileRequest.getOldUserId());
 
         User userProf = user.createBlankUser();
         userProf.setId(user.getId());
@@ -133,10 +136,10 @@ public class ProfileController {
         profileRepository.save(profile);
 
         oldUser.setParentIdProfile(null);
-        userRepository.save(oldUser);
+        userService.save(oldUser);
 
         user.setParentIdProfile(profile.getId());
-        userRepository.save(user);
+        userService.save(user);
 
         return ResponseEntity.ok(profile);
     }
@@ -147,10 +150,10 @@ public class ProfileController {
 
         User userProfile = profile.getUser();
         if (userProfile != null) {
-            User user = userRepository.getById(userProfile.getId());
+            User user = userService.getById(userProfile.getId());
             if (user != null) {
                 user.setParentIdProfile(null);
-                userRepository.save(user);
+                userService.save(user);
             }
         }
         profileRepository.delete(profile);

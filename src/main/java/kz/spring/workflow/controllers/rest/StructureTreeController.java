@@ -25,7 +25,7 @@ public class StructureTreeController {
     private OrgUnitRepository orgUnitRepository;
     final
     private ProfileRepository profileRepository;
-
+    @Autowired
     public StructureTreeController(OrgUnitRepository orgUnitRepository, ProfileRepository profileRepository) {
         this.orgUnitRepository = orgUnitRepository;
         this.profileRepository = profileRepository;

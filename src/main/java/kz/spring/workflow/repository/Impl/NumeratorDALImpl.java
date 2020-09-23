@@ -5,6 +5,7 @@ import kz.spring.workflow.repository.DAL.NumeratorDAL;
 import org.bson.types.ObjectId;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.MongoTransactionException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -16,6 +17,7 @@ public class NumeratorDALImpl implements NumeratorDAL {
 
     private final MongoTemplate mongoTemplate;
 
+    @Autowired
     public NumeratorDALImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
@@ -79,7 +81,11 @@ public class NumeratorDALImpl implements NumeratorDAL {
         if (numerator == null) {
             throw new IllegalArgumentException("Numerator numerator cannot be null");
         }
+        try {
         mongoTemplate.save(numerator);
+        } catch (MongoTransactionException mte) {
+
+        }
         return numerator;
     }
 }

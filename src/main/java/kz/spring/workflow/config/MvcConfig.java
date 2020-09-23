@@ -15,7 +15,6 @@ public class MvcConfig implements WebMvcConfigurer {
         return new RestTemplate();
     };
 
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**")

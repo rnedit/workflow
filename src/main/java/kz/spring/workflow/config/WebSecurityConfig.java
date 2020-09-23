@@ -32,14 +32,20 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
         prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
+    final
+    private
     UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
+    private final AuthEntryPointJwt unauthorizedHandler;
+
+    private final LogoutSuccessHandler myLogoutSuccessHandler;
 
     @Autowired
-    private LogoutSuccessHandler myLogoutSuccessHandler;
+    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService, AuthEntryPointJwt unauthorizedHandler, LogoutSuccessHandler myLogoutSuccessHandler) {
+        this.userDetailsService = userDetailsService;
+        this.unauthorizedHandler = unauthorizedHandler;
+        this.myLogoutSuccessHandler = myLogoutSuccessHandler;
+    }
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -84,24 +90,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().
-                and().
-                csrf().disable()
+        http
+                .httpBasic().disable()
+                .cors().
+                and()
+                .csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
 
 
                 .antMatchers("/api/auth/**").permitAll()
+//                .antMatchers("/graphiql/**","/graphql/**","/vendor/**","/subscriptions/**").permitAll()
                 .antMatchers("/api/test/**").permitAll()
                 .antMatchers("/","/error","/static/**","/login/**","/public/**","/users/**").permitAll()
 
                 .anyRequest().authenticated()
 
-
 ;
-
-
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

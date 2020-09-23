@@ -5,6 +5,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateNotFoundException;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
@@ -17,6 +18,7 @@ public class FreemarkerTemplate {
 
     private final Configuration config;
 
+    @Autowired
     public FreemarkerTemplate(Configuration config) {
         this.config = config;
     }

@@ -1,0 +1,7 @@
+type OrgUnit {
+    name:String!
+    homeOrgUnit:Boolean
+    creationDate:Date!
+    profiles:[Profile]
+    OrgUnits:[OrgUnit]
+}

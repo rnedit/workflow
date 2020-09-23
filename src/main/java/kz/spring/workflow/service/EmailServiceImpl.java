@@ -3,6 +3,7 @@ package kz.spring.workflow.service;
 import kz.spring.workflow.service.DAL.EmailService;
 import kz.spring.workflow.service.util.EmailFields;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailException;
@@ -39,6 +40,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender emailSender;
 
+    @Autowired
     public EmailServiceImpl(JavaMailSender emailSender, FreemarkerTemplate freemarkerTemplate) {
         this.emailSender = emailSender;
         this.freemarkerTemplate = freemarkerTemplate;
