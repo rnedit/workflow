@@ -14,7 +14,8 @@ public interface InternalDAL {
     List<Internal> getAllMainOfRoles(Set<String> Roles, Pageable pageable);
     List<Internal> getAllMainOfDraft(String profileId, Pageable pageable);
     List<Internal> getAllInternals();
-
+    Integer getTotalCountForProfile(String profileId);
+    Integer getTotalCountForRole(Set<String> Roles);
     Internal getInternal(String id);
 
     Boolean isCurrentVersion(Internal internal, Integer version);

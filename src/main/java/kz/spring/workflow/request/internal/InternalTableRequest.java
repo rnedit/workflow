@@ -17,7 +17,7 @@ public class InternalTableRequest {
     Integer page = 1;
 
     @NotNull
-    Integer perPage = 15;
+    Integer pageSize = 15;
 
     @NotNull
     Integer countExec;

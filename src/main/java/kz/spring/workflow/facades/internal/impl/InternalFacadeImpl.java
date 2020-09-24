@@ -79,7 +79,7 @@ public class InternalFacadeImpl implements InternalFacade {
             Internal newInternal = internalService.setInternalFromInternalSaveRequest(internal, internalSaveRequest);
 
             EventQueue eventQueue = new EventQueue();
-            eventQueue.setCreatorUserId(internalSaveRequest.getСreatorUserId());
+            eventQueue.setCreatorUserId(internalSaveRequest.getCreatorUserId());
             eventQueue.setDocumentId(internal.getId());
             eventQueue.setTaskName(TASK_SAVEINTERNAL);
 

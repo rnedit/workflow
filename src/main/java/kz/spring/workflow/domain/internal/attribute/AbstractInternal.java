@@ -34,14 +34,14 @@ public abstract class AbstractInternal {
 
     @NotEmpty
     @NotNull
-    private String сreatorProfileId;
+    private String creatorProfileId;
 
     @DBRef
     private Profile creatorProfile;
 
     @NotEmpty
     @NotNull
-    private String сreatorUserId;
+    private String creatorUserId;
 
     @DBRef
     private User creatorUser;

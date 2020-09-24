@@ -38,14 +38,18 @@ public class InternalService {
         internal.setTypeAgreement(internalSaveRequest.getTypeAgreement());
         internal.setDraft(internalSaveRequest.getDraft());
         internal.setRecipient(internalSaveRequest.getRecipient());
-        internal.setProfileRecipient(profileRepository.getById(internalSaveRequest.getRecipient()));
-        internal.setСreatorProfileId(internalSaveRequest.getСreatorProfileId());
-        internal.setСreatorUserId(internalSaveRequest.getСreatorUserId());
+
+        Profile recipientP = profileRepository.getById(internalSaveRequest.getRecipient());
+        internal.setRecipientName(recipientP.getName()+"( "+recipientP.getUser().getUsername()+" )");
+        internal.setProfileRecipient(recipientP);
+
+        internal.setCreatorProfileId(internalSaveRequest.getCreatorProfileId());
+        internal.setCreatorUserId(internalSaveRequest.getCreatorUserId());
 
         internal.setUpdateUserId(internalSaveRequest.getUpdateUserId());
         internal.setUpdateProfileId(internalSaveRequest.getUpdateProfileId());
 
-        Profile сreatorProfile = profileRepository.getById(internalSaveRequest.getСreatorProfileId());
+        Profile сreatorProfile = profileRepository.getById(internalSaveRequest.getCreatorProfileId());
         List<String> genAllReaders = new ArrayList<>();
         genAllReaders.add(internal.getProfileRecipient().getId());
         if (сreatorProfile==null) {
@@ -56,10 +60,10 @@ public class InternalService {
                 genAllReaders.add(сreatorProfile.getId());
         }
         internal.setCreatorProfile(сreatorProfile);
-        User сreatorUser = userService.getById(internalSaveRequest.getСreatorUserId());
+        User сreatorUser = userService.getById(internalSaveRequest.getCreatorUserId());
 
         if (сreatorUser == null) {
-            throw new ObjectNotFoundException("User Id " + internalSaveRequest.getСreatorUserId() + " not found!",
+            throw new ObjectNotFoundException("User Id " + internalSaveRequest.getCreatorUserId() + " not found!",
                     User.class.getName());
         }
         internal.setCreatorUser(сreatorUser);
@@ -79,7 +83,7 @@ public class InternalService {
             });
         });
 
-        internalSaveRequest.getСreatorRolesId().forEach(r->{
+        internalSaveRequest.getCreatorRolesId().forEach(r->{
             if (!genAllReadersRoles.contains(r))
                 genAllReadersRoles.add(r);
         });
@@ -93,6 +97,10 @@ public class InternalService {
             internal.setAttachments(Arrays.asList(internalSaveRequest.getAttachmentIds()));
         if (internalSaveRequest.getAttachmentNames()!=null)
             internal.setAttachmentNames(Arrays.asList(internalSaveRequest.getAttachmentNames()));
+        if (internalSaveRequest.getAnotherAttachmentIds()!=null)
+            internal.setAnotherAttachments(Arrays.asList(internalSaveRequest.getAnotherAttachmentIds()));
+        if (internalSaveRequest.getAnotherAttachmentNames()!=null)
+            internal.setAnotherAttachmentNames(Arrays.asList(internalSaveRequest.getAnotherAttachmentNames()));
 
         Internal newInternal = internalDAL.saveInternal(internal);
 

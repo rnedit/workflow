@@ -1,17 +1,39 @@
 scalar Date
-#scalar InternalTableRequest
+scalar ObjectRedux
 
 input InternalTableRequest {
     userId:String!
     page:Int
-    perPage:Int
+    pageSize:Int
     countExec:Int
 }
 
+input InternalSaveRequest {
+    subject:String!
+    recipient:String!
+    recipientName:String
+    typeAgreement:Int!
+    draft:Boolean!
+    creatorProfileId:String!
+    creatorUserId:String!
+    updateUserId:String
+    updateProfileId:String
+    creatorRolesId:[String]!
+    isAttachments:Boolean!
+    attachmentIds:[String]
+    attachmentNames:[String]
+    isAnotherAttachments:Boolean!
+    anotherAttachmentIds:[String]
+    anotherAttachmentNames:[String]
+
+    _persist:ObjectRedux
+}
+
 type Internal {
-    id:String!
+    id:ID!
     version:Int
     number:String
+    recipientName:String
     creatorProfile: Profile
     creatorUser: User
     updateProfile: Profile
@@ -20,14 +42,27 @@ type Internal {
     creationDate:Date!
     typeAgreement:Int!
     draft:Boolean!
-    profileRecipient: Profile!
-
+    profileRecipient: Profile
+    isAttachments:Boolean
+    attachments:[String]
+    attachmentNames:[String]
+    isAnotherAttachments:Boolean
+    anotherAttachments:[String]
+    anotherAttachmentNames:[String]
 }
 
+type Internals {
+    internalList:[Internal]
+    totalCount:Int
+}
 
 # Root
 type Query {
-    internal(id:ID!): Internal
+    getInternal(id:ID!): Internal
     internals: [Internal]
-    getInternals (internalRequest:InternalTableRequest):[Internal]
+    getInternals (internalRequest:InternalTableRequest):Internals
+}
+
+type Mutation {
+    addInternal(internalSaveRequest:InternalSaveRequest):Internal
 }

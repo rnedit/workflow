@@ -25,7 +25,7 @@ public class InternalTableRequestScalarType  extends GraphQLScalarType {
                     InternalTableRequest map = objectMapper.readValue(o.toString(), InternalTableRequest.class);
                     internalTableRequest.setUserId(map.getUserId());
                     internalTableRequest.setPage(map.getPage());
-                    internalTableRequest.setPerPage(map.getPerPage());
+                    internalTableRequest.setPageSize(map.getPageSize());
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
@@ -41,7 +41,7 @@ public class InternalTableRequestScalarType  extends GraphQLScalarType {
                     InternalTableRequest map = objectMapper.readValue(o.toString(), InternalTableRequest.class);
                     internalTableRequest.setUserId(map.getUserId());
                     internalTableRequest.setPage(map.getPage());
-                    internalTableRequest.setPerPage(map.getPerPage());
+                    internalTableRequest.setPageSize(map.getPageSize());
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }

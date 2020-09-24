@@ -1,6 +1,7 @@
 package kz.spring.workflow.repository.Impl;
 
 import kz.spring.workflow.domain.internal.Internal;
+import kz.spring.workflow.graphql.pojo.Internals;
 import kz.spring.workflow.repository.DAL.InternalDAL;
 import kz.spring.workflow.request.internal.InternalSaveRequest;
 import kz.spring.workflow.service.InternalService;
@@ -8,6 +9,7 @@ import org.bson.types.ObjectId;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.MongoTransactionException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -88,8 +90,8 @@ public class InternalDALImpl implements InternalDAL {
     @Override
     public Internal getInternal(String id) {
 
-        if (id == null) {
-            throw new IllegalArgumentException("Internal id cannot be null");
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("Internal id cannot be null or Blank");
         }
 
         Query query = new Query();
@@ -137,12 +139,11 @@ public class InternalDALImpl implements InternalDAL {
             throw new IllegalArgumentException("pageable cannot be null");
         }
         Query query = new Query();
+
         query.with(pageable);
 
         query.addCriteria(Criteria
                 .where("allReadersRoles").all(Roles)
-                .and("draft").is(false)
-                .and("number").ne(null)
 
         );
         return getInternals(query);
@@ -168,15 +169,41 @@ public class InternalDALImpl implements InternalDAL {
     }
 
     private List<Internal> getInternals(Query query) {
-        final List<Internal> internalsPage = mongoTemplate.find(query, Internal.class);
-        final List<Internal> internalsFacadeData = new ArrayList<>();
-
-        if (internalsPage != null && !internalsPage.isEmpty()) {
-            internalsPage.forEach(i -> {
-                final Internal internalData = Internal.setNewInternalFromCurrent(i);
-                internalsFacadeData.add(internalData);
-            });
+//        final List<Internal> internals = mongoTemplate.find(query, Internal.class);
+//        final List<Internal> internalsFacadeData = new ArrayList<>();
+//
+//        if (internals != null && !internals.isEmpty()) {
+//            internals.forEach(i -> {
+//                final Internal internalData = Internal.setNewInternalFromCurrent(i);
+//                internalsFacadeData.add(internalData);
+//            });
+//        }
+        return mongoTemplate.find(query, Internal.class);
+    }
+    @Override
+    public Integer getTotalCountForProfile(String profileId) {
+        if (profileId == null) {
+            throw new IllegalArgumentException("profileId cannot be null");
         }
-        return internalsFacadeData;
+        Query query = new Query();
+        query.addCriteria(Criteria
+                .where("allReaders").all(profileId)
+                .and("draft").is(false)
+                .and("number").ne(null)
+
+        );
+        return getInternals(query).size();
+    }
+    @Override
+    public Integer getTotalCountForRole(Set<String> Roles) {
+        if (Roles == null) {
+            throw new IllegalArgumentException("Roles cannot be null");
+        }
+        Query query = new Query();
+        query.addCriteria(Criteria
+                .where("allReadersRoles").all(Roles)
+
+        );
+        return getInternals(query).size();
     }
 }

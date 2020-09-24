@@ -52,7 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*");
+                registry.addMapping("/**").allowedOrigins("workflow.kz", "localhost");
                 registry.addMapping("/**").allowCredentials(true);
             }
         };
@@ -101,7 +101,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
                 .antMatchers("/api/auth/**").permitAll()
-//                .antMatchers("/graphiql/**","/graphql/**","/vendor/**","/subscriptions/**").permitAll()
+                //.antMatchers("/graphiql/**","/graphql/**","/vendor/**","/subscriptions/**").permitAll()
+                .antMatchers("/graphql/**").permitAll()
                 .antMatchers("/api/test/**").permitAll()
                 .antMatchers("/","/error","/static/**","/login/**","/public/**","/users/**").permitAll()
 

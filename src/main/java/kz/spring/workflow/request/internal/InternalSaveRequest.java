@@ -22,6 +22,10 @@ public class InternalSaveRequest {
     @NotNull
     private String recipient;
 
+    @NotEmpty
+    @NotNull
+    private String recipientName;
+
     @NotNull
     private Integer typeAgreement;
 
@@ -30,11 +34,11 @@ public class InternalSaveRequest {
 
     @NotEmpty
     @NotNull
-    private String сreatorProfileId;
+    private String creatorProfileId;
 
     @NotEmpty
     @NotNull
-    private String сreatorUserId;
+    private String creatorUserId;
 
     private String updateUserId;
 
@@ -42,10 +46,19 @@ public class InternalSaveRequest {
 
     @NotEmpty
     @NotNull
-    private List<String> сreatorRolesId;
+    private List<String> creatorRolesId;
 
+    private Boolean isAttachments;
 
     private String[] attachmentIds;
 
     private String[] attachmentNames;
+
+    private Boolean isAnotherAttachments;
+
+    private String[] anotherAttachmentIds;
+
+    private String[] anotherAttachmentNames;
+
+    private Object _persist;
 }

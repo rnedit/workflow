@@ -50,7 +50,7 @@ public class InternalController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
         User user = userService.getById(internalRequest.getUserId());
-        Pageable pageble = PageRequest.of(internalRequest.getPage() - 1, internalRequest.getPerPage());
+        Pageable pageble = PageRequest.of(internalRequest.getPage() , internalRequest.getPageSize());
         Map<String, Object> data = new HashMap<>();
         if (user.getRoles().contains(ERole.ROLE_USER)) {
             if (user.getParentIdProfile() == null) {
@@ -60,7 +60,7 @@ public class InternalController {
             }
             List<Internal> internalList = internalDAL.getAllMainOfAllReaders(user.getParentIdProfile(), pageble);
             data.put("internals", internalList);
-            data.put("perpage", internalRequest.getPerPage());
+            data.put("perpage", internalRequest.getPageSize());
             data.put("page", internalRequest.getPage());
             data.put("total", internalList.size());
             return ResponseEntity.ok(data);
@@ -71,7 +71,7 @@ public class InternalController {
             });
             List<Internal> internalList = internalDAL.getAllMainOfRoles(roles, pageble);
             data.put("internals", internalList);
-            data.put("perpage", internalRequest.getPerPage());
+            data.put("perpage", internalRequest.getPageSize());
             data.put("page", internalRequest.getPage());
             data.put("total", internalList.size());
             return ResponseEntity.ok(data);
