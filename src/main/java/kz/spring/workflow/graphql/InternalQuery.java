@@ -59,6 +59,17 @@ public class InternalQuery implements GraphQLQueryResolver {
         return internals;
     };
 
+    public Internals searchInternals(InternalTableRequest internalRequest) {
+        if (internalRequest.getSearchText().isBlank() || internalRequest.getSearchText()==null){
+            return getInternals(internalRequest);
+        }
+        Internals internals = new Internals();
+        List<Internal> internalList = internalDAL.getAllMainOfRolesOrAllReadersAndNumber(internalRequest);
+        internals.setInternalList(internalList);
+        internals.setTotalCount(internalList.size());
+        return internals;
+    }
+
     public Internal getInternal(String id) {
         return internalDAL.getInternal(id);
     }

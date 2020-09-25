@@ -3,6 +3,7 @@ scalar ObjectRedux
 
 input InternalTableRequest {
     userId:String!
+    searchText:String
     page:Int
     pageSize:Int
     countExec:Int
@@ -61,6 +62,7 @@ type Query {
     getInternal(id:ID!): Internal
     internals: [Internal]
     getInternals (internalRequest:InternalTableRequest):Internals
+    searchInternals (internalRequest:InternalTableRequest):Internals
 }
 
 type Mutation {

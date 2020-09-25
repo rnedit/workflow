@@ -1,16 +1,24 @@
 package kz.spring.workflow.repository.Impl;
 
+import kz.spring.workflow.domain.User;
 import kz.spring.workflow.domain.internal.Internal;
 import kz.spring.workflow.graphql.pojo.Internals;
 import kz.spring.workflow.repository.DAL.InternalDAL;
+import kz.spring.workflow.repository.InternalRepository;
 import kz.spring.workflow.request.internal.InternalSaveRequest;
+import kz.spring.workflow.request.internal.InternalTableRequest;
 import kz.spring.workflow.service.InternalService;
+import kz.spring.workflow.service.UserServiceImpl;
+import org.bson.BsonRegularExpression;
 import org.bson.types.ObjectId;
 import org.hibernate.ObjectNotFoundException;
+import org.hibernate.criterion.Example;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.MongoTransactionException;
+import org.springframework.data.mongodb.core.ExecutableFindOperation;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -18,23 +26,70 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Repository
 public class InternalDALImpl implements InternalDAL {
 
-    private final MongoTemplate mongoTemplate;
+    @Autowired
+    InternalRepository internalRepository;
+
+    final private MongoTemplate mongoTemplate;
+    final private UserServiceImpl userService;
 
     @Autowired
-    public InternalDALImpl(MongoTemplate mongoTemplate) {
+    public InternalDALImpl(MongoTemplate mongoTemplate, UserServiceImpl userService) {
         this.mongoTemplate = mongoTemplate;
+        this.userService = userService;
     }
 
     @Override
     public List<Internal> getAllInternals() {
         return mongoTemplate.findAll(Internal.class);
     }
+
+    @Override
+    public List<Internal> getAllMainOfRolesOrAllReadersAndNumber(InternalTableRequest internalTableRequest) {
+        if (internalTableRequest == null) {
+            throw new IllegalArgumentException("internalTableRequest cannot be null");
+        }
+        if (internalTableRequest.getSearchText().isBlank() || internalTableRequest.getSearchText()==null) {
+            throw new IllegalArgumentException("internalTableRequest.getSearchText() cannot be null or blank");
+        }
+        User user = userService.getById(internalTableRequest.getUserId());
+        Pageable pageble = PageRequest.of(internalTableRequest.getPage(),
+                internalTableRequest.getPageSize(),
+                Sort.by("creationDate").descending());
+        Set<String> roles = new HashSet<>();
+        user.getRoles().forEach(r -> {
+            roles.add(r.getId());
+        });
+
+
+        return getInternalsForRegex(internalTableRequest.getSearchText(), internalTableRequest.getSearchText());
+    }
+
+//    @Override
+//    public List<Internal> getAllMainOfSearch(String profileId, String searchText, Pageable pageable) {
+//        if (profileId == null) {
+//            throw new IllegalArgumentException("profileId cannot be null");
+//        }
+//        if (searchText == null) {
+//            throw new IllegalArgumentException("searchText cannot be null");
+//        }
+//        Query query = new Query();
+//
+//        query.with(pageable);
+//
+//        query.addCriteria(Criteria
+//                .where("allReadersRoles").all(Roles)
+//
+//        );
+//        return getInternals(query);
+//    }
 
     @Override
     public Boolean isCurrentVersion(Internal internal, Integer version) {
@@ -146,6 +201,7 @@ public class InternalDALImpl implements InternalDAL {
                 .where("allReadersRoles").all(Roles)
 
         );
+        System.out.println(query.toString());
         return getInternals(query);
     }
 
@@ -178,7 +234,22 @@ public class InternalDALImpl implements InternalDAL {
 //                internalsFacadeData.add(internalData);
 //            });
 //        }
+
         return mongoTemplate.find(query, Internal.class);
+    }
+
+    private List<Internal> getInternalsForRegex(String number, String subject) {
+//        final List<Internal> internals = mongoTemplate.find(query, Internal.class);
+//        final List<Internal> internalsFacadeData = new ArrayList<>();
+//
+//        if (internals != null && !internals.isEmpty()) {
+//            internals.forEach(i -> {
+//                final Internal internalData = Internal.setNewInternalFromCurrent(i);
+//                internalsFacadeData.add(internalData);
+//            });
+//        }
+
+        return internalRepository.findAllByNumberRegexOrSubjectRegex(number, subject);
     }
     @Override
     public Integer getTotalCountForProfile(String profileId) {

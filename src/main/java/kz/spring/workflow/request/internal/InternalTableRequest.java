@@ -13,6 +13,8 @@ public class InternalTableRequest {
     @NotNull
     String userId;
 
+    String searchText;
+
     @NotNull
     Integer page = 1;
 
