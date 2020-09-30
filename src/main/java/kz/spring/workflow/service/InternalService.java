@@ -40,7 +40,7 @@ public class InternalService {
         internal.setRecipient(internalSaveRequest.getRecipient());
 
         Profile recipientP = profileRepository.getById(internalSaveRequest.getRecipient());
-        internal.setRecipientName(recipientP.getName()+"( "+recipientP.getUser().getUsername()+" )");
+        internal.setRecipientName(recipientP.getName());
         internal.setProfileRecipient(recipientP);
 
         internal.setCreatorProfileId(internalSaveRequest.getCreatorProfileId());
@@ -83,9 +83,9 @@ public class InternalService {
             });
         });
 
-        internalSaveRequest.getCreatorRolesId().forEach(r->{
-            if (!genAllReadersRoles.contains(r))
-                genAllReadersRoles.add(r);
+        сreatorUser.getRoles().forEach(r->{
+            if (!genAllReadersRoles.contains(r.getId()))
+                genAllReadersRoles.add(r.getId());
         });
 
         //права на доступ обычным пользователям "ROLE_USER"
@@ -93,14 +93,22 @@ public class InternalService {
         //права на доступ по ролям если роль не соответствует "ROLE_USER"
         internal.setAllReadersRoles(genAllReadersRoles);
 
-        if (internalSaveRequest.getAttachmentIds()!=null)
+        if (internalSaveRequest.getAttachmentIds()!=null) {
             internal.setAttachments(Arrays.asList(internalSaveRequest.getAttachmentIds()));
-        if (internalSaveRequest.getAttachmentNames()!=null)
+        }
+
+        if (internalSaveRequest.getAttachmentNames()!=null) {
+            internal.setIsAttachments(true);
             internal.setAttachmentNames(Arrays.asList(internalSaveRequest.getAttachmentNames()));
+        }
+
         if (internalSaveRequest.getAnotherAttachmentIds()!=null)
             internal.setAnotherAttachments(Arrays.asList(internalSaveRequest.getAnotherAttachmentIds()));
-        if (internalSaveRequest.getAnotherAttachmentNames()!=null)
+        if (internalSaveRequest.getAnotherAttachmentNames()!=null) {
+            internal.setIsAnotherAttachments(true);
             internal.setAnotherAttachmentNames(Arrays.asList(internalSaveRequest.getAnotherAttachmentNames()));
+        }
+
 
         Internal newInternal = internalDAL.saveInternal(internal);
 

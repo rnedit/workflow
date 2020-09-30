@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -34,7 +35,7 @@ public class StructureTreeController {
     @PostMapping()
     public ResponseEntity<?> getAllStructureTree() {
         Set<OrgUnit> orgUnitSet = orgUnitRepository.getOrgUnitsByParentIdNotNullOrHomeOrgUnit(true);
-        Set<Profile> profileSet = profileRepository.getProfilesByParentIdNotNull();
+        List<Profile> profileSet = profileRepository.getProfilesByParentIdNotNull();
 
         Set<Object> objectCollection = new HashSet<>();
         if (orgUnitSet.size()>0) {

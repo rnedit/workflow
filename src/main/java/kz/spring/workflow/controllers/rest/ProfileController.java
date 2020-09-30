@@ -165,13 +165,13 @@ public class ProfileController {
 
     @PostMapping("/parentidisnull")
     public ResponseEntity<?> getProfilesByParentIdIsNull() {
-        Set<Profile> profiles = profileRepository.getProfilesByParentIdIsNull();
+        List<Profile> profiles = profileRepository.getProfilesByParentIdIsNull();
         return ResponseEntity.ok(profiles);
     }
 
     @PostMapping("/parentidnotnull")
     public ResponseEntity<?> getProfilesByParentIdNotNull() {
-        Set<Profile> profiles = profileRepository.getProfilesByParentIdNotNull();
+        List<Profile> profiles = profileRepository.getProfilesByParentIdNotNull();
         return ResponseEntity.ok(profiles);
     }
 

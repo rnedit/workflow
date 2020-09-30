@@ -15,9 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Log4j2
 @Component
@@ -42,19 +40,16 @@ public class InternalQuery implements GraphQLQueryResolver {
                 internalRequest.getPageSize(),
                 Sort.by("creationDate").descending());
         Internals internals = new Internals();
-        if (user.getRoles().contains(ERole.ROLE_USER)) {
-            List<Internal> internalList = internalDAL.getAllMainOfAllReaders(user.getParentIdProfile(), pageble);
-            internals.setInternalList(internalList);
-            internals.setTotalCount(internalDAL.getTotalCountForProfile(user.getParentIdProfile()));
-        } else {
-            Set<String> roles = new HashSet<>();
-            user.getRoles().forEach(r -> {
+        Collection<String> profiles = new ArrayList<>();
+        profiles.add(user.getParentIdProfile());
+        Collection<String> roles = new ArrayList<>();
+        user.getRoles().forEach(r -> {
                 roles.add(r.getId());
             });
-            List<Internal> internalList = internalDAL.getAllMainOfRoles(roles, pageble);
-            internals.setInternalList(internalList);
-            internals.setTotalCount(internalDAL.getTotalCountForRole(roles));
-        }
+
+        List<Internal> internalList = internalDAL.getAllMainOfRolesOrAllReaders(roles, profiles, pageble);
+        internals.setInternalList(internalList);
+        internals.setTotalCount(internalList.size());
 
         return internals;
     };

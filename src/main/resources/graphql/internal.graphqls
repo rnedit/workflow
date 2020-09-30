@@ -19,7 +19,6 @@ input InternalSaveRequest {
     creatorUserId:String!
     updateUserId:String
     updateProfileId:String
-    creatorRolesId:[String]!
     isAttachments:Boolean!
     attachmentIds:[String]
     attachmentNames:[String]
@@ -35,8 +34,11 @@ type Internal {
     version:Int
     number:String
     recipientName:String
+    recipient:String
     creatorProfile: Profile
     creatorUser: User
+    creatorUserId: String
+    creatorProfileId: String
     updateProfile: Profile
     profilesAllReaders:[Profile]
     subject:String!

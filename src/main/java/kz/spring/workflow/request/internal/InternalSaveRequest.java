@@ -44,10 +44,6 @@ public class InternalSaveRequest {
 
     private String updateProfileId;
 
-    @NotEmpty
-    @NotNull
-    private List<String> creatorRolesId;
-
     private Boolean isAttachments;
 
     private String[] attachmentIds;

@@ -225,7 +225,7 @@ public class OrgUnitController {
         OrgUnit orgUnit = orgUnitRepository.getById(id);
         Set<OrgUnit> orgUnitsForParent = orgUnitRepository.getOrgUnitsByParentIdIsNullAndIdIsNot(id);
         Set<Profile> profiles = orgUnit.getProfiles();
-        Set<Profile> profilesParentIdIsNull = profileRepository.getProfilesByParentIdIsNull();
+        List<Profile> profilesParentIdIsNull = profileRepository.getProfilesByParentIdIsNull();
         Map<String,Object> data = new HashMap<>();
         data.put("profiles",profiles);
         data.put("profilesParentIdIsNull",profilesParentIdIsNull);

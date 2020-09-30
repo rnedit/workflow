@@ -1,4 +1,5 @@
 type Profile {
+    id:String!
     name:String!
     parentName:String
     access: [Access]
@@ -8,6 +9,7 @@ type Profile {
 # Root
 extend type Query {
     getProfile(id:String!):Profile
+    getProfilesByParentIdNotNull:[Profile]
 }
 
 schema {

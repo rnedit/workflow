@@ -23,4 +23,8 @@ public class ProfileQuery implements GraphQLQueryResolver {
     public Profile getProfile(String id){
         return profileRepository.getById(id);
     }
+
+    public List<Profile> getProfilesByParentIdNotNull() {
+        return profileRepository.getProfilesByParentIdNotNull();
+    }
 }

@@ -25,10 +25,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Repository
@@ -63,13 +60,19 @@ public class InternalDALImpl implements InternalDAL {
         Pageable pageble = PageRequest.of(internalTableRequest.getPage(),
                 internalTableRequest.getPageSize(),
                 Sort.by("creationDate").descending());
-        Set<String> roles = new HashSet<>();
+        Collection<String> roles = new ArrayList<>();
+        Collection<String> profiles = new ArrayList<>();
+        profiles.add(user.getParentIdProfile());
         user.getRoles().forEach(r -> {
             roles.add(r.getId());
         });
 
 
-        return getInternalsForRegex(internalTableRequest.getSearchText(), internalTableRequest.getSearchText());
+        return getInternalsForRegex(internalTableRequest.getSearchText(),
+                internalTableRequest.getSearchText(),
+                profiles,
+                roles
+                );
     }
 
 //    @Override
@@ -80,7 +83,7 @@ public class InternalDALImpl implements InternalDAL {
 //        if (searchText == null) {
 //            throw new IllegalArgumentException("searchText cannot be null");
 //        }
-//        Query query = new Query();
+//        Query query = new Query();profiles
 //
 //        query.with(pageable);
 //
@@ -90,6 +93,11 @@ public class InternalDALImpl implements InternalDAL {
 //        );
 //        return getInternals(query);
 //    }
+
+    @Override
+    public List<Internal> getAllMainOfRolesOrAllReaders(Collection<String> roles, Collection<String> profiles, Pageable pageable) {
+        return internalRepository.findAllByAllReadersRolesInOrAllReadersIn(roles, profiles, pageable);
+    }
 
     @Override
     public Boolean isCurrentVersion(Internal internal, Integer version) {
@@ -201,7 +209,7 @@ public class InternalDALImpl implements InternalDAL {
                 .where("allReadersRoles").all(Roles)
 
         );
-        System.out.println(query.toString());
+       // System.out.println(query.toString());
         return getInternals(query);
     }
 
@@ -238,19 +246,17 @@ public class InternalDALImpl implements InternalDAL {
         return mongoTemplate.find(query, Internal.class);
     }
 
-    private List<Internal> getInternalsForRegex(String number, String subject) {
-//        final List<Internal> internals = mongoTemplate.find(query, Internal.class);
-//        final List<Internal> internalsFacadeData = new ArrayList<>();
-//
-//        if (internals != null && !internals.isEmpty()) {
-//            internals.forEach(i -> {
-//                final Internal internalData = Internal.setNewInternalFromCurrent(i);
-//                internalsFacadeData.add(internalData);
-//            });
-//        }
-
-        return internalRepository.findAllByNumberRegexOrSubjectRegex(number, subject);
+    private List<Internal> getInternalsForRegex(String number, String subject,
+                                                Collection profiles,
+                                                Collection<String> allReadersRoles) {
+        return internalRepository.findAllByNumberRegexOrSubjectRegexAndAllReadersRolesInOrAllReadersIn(
+                number,
+                subject,
+                allReadersRoles,
+                profiles
+                );
     }
+
     @Override
     public Integer getTotalCountForProfile(String profileId) {
         if (profileId == null) {

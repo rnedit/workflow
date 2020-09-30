@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -18,7 +19,15 @@ public interface InternalRepository extends MongoRepository<Internal, Long> {
     @Query("{subject : { $regex : /?0/ }}")
     List<Internal> getAllBySubjectRegexssss(String regex);
 
+    List<Internal> findAllByNumberRegexOrSubjectRegexAndAllReadersRolesInOrAllReadersIn(String number,
+                                                                                        String subject,
+                                                                                        Collection allReadersRoles,
+                                                                                        Collection allReaders
+                                                                                        );
 
-    List<Internal> findAllByNumberRegexOrSubjectRegex(String number, String subject);
-
+    List<Internal> findAllByAllReadersRolesInOrAllReadersIn(
+            Collection allReadersRoles,
+            Collection allReaders,
+            Pageable p
+    );
 }
